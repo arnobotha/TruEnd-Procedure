@@ -109,3 +109,6 @@ sprintf("%.2f", (1 - calcNPV(lookup$Receipt_Inf, discRate1/12)/lookup$Balance[1]
 sprintf("%.2f", (1 - calcNPV(lookup$Receipt_Inf, discRate2/12)/lookup$Balance[1])*100)
 ### RESULTS: [discRate1]: -33.69%; [discRate2]: -9.6%
 
+# This is test
+
+
