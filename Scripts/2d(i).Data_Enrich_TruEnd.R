@@ -11,7 +11,7 @@
 #   - 2a.Data_Prepare_Credit_Basic.R
 #   - 2b.Date_Prepare_Credit_Advanced.R
 #   - 2c(i).Data_Prepare_Credit_TruEnd.R
-#s
+#
 # -- Inputs:
 #   - datCredit_real | Prepared credit data from script 2b
 #   - various parameters set in the setup script 0
