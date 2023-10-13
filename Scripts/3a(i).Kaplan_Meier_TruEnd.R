@@ -3,7 +3,7 @@
 # and compare it to when the TruEnd procedure is not applied.
 # ---------------------------------------------------------------------------------------
 # PROJECT TITLE: TruEnd-procedure
-# SCRIPT AUTHOR(S): 
+# SCRIPT AUTHOR(S): Roelinde Bester, Dr Arno Botha
 # ---------------------------------------------------------------------------------------
 # -- Script dependencies:
 #   - 0.Setup.R
@@ -12,9 +12,10 @@
 #   - 2b.Date_Prepare_Credit_Advanced.R
 #   - 2c(i).Data_Prepare_Credit_TruEnd.R
 #   - 2d(i).Data_Enrich_TruEnd.R
+#   - 2e(i).Data_Exclusions_NoTruEnd.R
 #s
 # -- Inputs:
-#   - datCredit_real | Prepared credit data from script 2d
+#   - datCredit_real | Prepared credit data from script 2e(i)
 #   - various parameters set in the setup script 0
 #
 # -- Outputs:
@@ -25,8 +26,6 @@
 # ------ 0. Preliminaries
 ptm <- proc.time() # for runtime calculations (ignore)
 
-# - Create a path to which the graphs must be saved
-graphPath_real <- "C:/Users/R5422965/OneDrive - FRG/TruEnd-Procedure/Figures"
 
 
 
@@ -42,15 +41,16 @@ col.v <- brewer.pal(10, "Paired")[c(10)]
 
 
 
+
 # ------ 2. Get the relevant data for testing TruEnd and NoTruEnd and sample accordingly
 # --- 2.1 TruENd 
 
 # Load data
 # - Confirm prepared credit data is loaded into memory
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-TruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-TruEnd"), tempPath)
 
 # --- Sample accordingly | First record per default spell
-datSurv_TruEnd <- subset(datCredit_real, ExclusionID==0 & !is.na(DefSpell_Num) & DefSpell_Counter==1, #& Partition == "Observed", 
+datSurv_TruEnd <- subset(datCredit_real, !is.na(DefSpell_Num) & DefSpell_Counter==1, #& Partition == "Observed", 
                   select=c("LoanID", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
                            "DefSpellResol_Type_Hist")); gc()
 rm(datCredit_real); gc()
@@ -60,13 +60,16 @@ rm(datCredit_real); gc()
 
 # Load data
 # - Confirm prepared credit data is loaded into memory
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-NoTruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-NoTruEnd"), tempPath)
 
 # --- Sample accordingly | First record per spell
-datSurv_NoTruEnd <- subset(datCredit_real, ExclusionID==0 & !is.na(DefSpell_Num) & DefSpell_Counter==1, #& Partition == "Observed", 
+datSurv_NoTruEnd <- subset(datCredit_real, !is.na(DefSpell_Num) & DefSpell_Counter==1, #& Partition == "Observed", 
                            select=c("LoanID", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
                                     "DefSpellResol_Type_Hist")); gc()
 rm(datCredit_real); gc()
+
+
+
 
 
 # ------ 3. Graphing default quantities
@@ -401,7 +404,7 @@ ggsave(print(gsurv1c_Combined_ht_3,newpage=F), file=paste0(genFigPath,"ht_3_MAE.
 
 
 
-
+### AB (2023/10/13): Cleanup code if this is no longer necessary, towards readying our codebase for publishing
 
 ################# OLD CODE 
 

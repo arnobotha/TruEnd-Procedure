@@ -104,13 +104,14 @@ if (Sys.getenv("USERNAME") == "WRQ") {
 } else if (Sys.getenv("USERNAME") == "R5422965") {
   
   # - Custom path where R-scripts are saved
-  path_cust <- "C:/Users/R5422965/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Scripts/"
+  path_cust <- "C:/Users/R5422965/OneDrive - FRG/TruEnd-Procedure/Scripts/"
   
   # - Common path for storing important R-objects as back-up
-  genObjPath <- "C:/Users/R5422965/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Objects/"
+  genObjPath <- "C:/Users/R5422965/OneDrive - FRG/TruEnd-Procedure/Objects/"
   
   # - Common path for saving important analytics (e.g., sampling)
-  genFigPath <- "C:/Users/R5422965/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Figures/"
+  genFigPath <- "C:/Users/R5422965/OneDrive - FRG/TruEnd-Procedure/Figures/"
+
   
 } else {
   stop("User-specific paths not set for current user: ", Sys.getenv("USERNAME"), ". Please fix in Setup script (0.Setup.R) before continuing")

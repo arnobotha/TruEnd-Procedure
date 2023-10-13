@@ -2,18 +2,19 @@
 # Prepare Kaplan-Meier plots to examine the impact when the TruEnd procedure is not applied.
 # ---------------------------------------------------------------------------------------
 # PROJECT TITLE: TruEnd-procedure
-# SCRIPT AUTHOR(S): 
+# SCRIPT AUTHOR(S): Roelinde Bester, Dr Arno Botha
 # ---------------------------------------------------------------------------------------
 # -- Script dependencies:
 #   - 0.Setup.R
 #   - 1.Data_Import.R
 #   - 2a.Data_Prepare_Credit_Basic.R
 #   - 2b.Date_Prepare_Credit_Advanced.R
-#   - 2c(i).Data_Prepare_Credit_TruEnd.R
-#   - 2d(i).Data_Enrich_TruEnd.R
-#s
+#   - 2c(ii).Data_Prepare_Credit_NoTruEnd.R
+#   - 2d(ii).Data_Enrich_NoTruEnd.R
+#   - 2e(ii).Data_Exclusions_NoTruEnd.R
+#
 # -- Inputs:
-#   - datCredit_real | Prepared credit data from script 2d
+#   - datCredit_real | Prepared credit data from script 2e(ii)
 #   - various parameters set in the setup script 0
 #
 # -- Outputs:
@@ -21,15 +22,17 @@
 # ---------------------------------------------------------------------------------------
 
 
+### AB (2023/10/13): Is this script still relevant given script 3a(i), which contains both TruEnd and NoTruEnd parts?
+# Delete script if not
+
+
 # ------ 0. Preliminaries
 ptm <- proc.time() # for runtime calculations (ignore)
 
 # - Confirm prepared credit data is loaded into memory
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-NoTruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-NoTruEnd"), tempPath)
 
 
-# - Create a path to which the graphs must be saved
-graphPath_real <- "C:/Users/R5422965/OneDrive - FRG/TruEnd-Procedure/Figures"
 
 # --- 1. Graphing setup
 windowsFonts("Cambria" = windowsFont("Cambria"))
@@ -47,7 +50,7 @@ col.v <- brewer.pal(10, "Paired")[c(10)]
 # Spell correctly specified with left-truncated start time and 0 for unaffected spells
 
 # --- Sample accordingly | First record per spell
-datSurv_NoTruEnd <- subset(datCredit_real, ExclusionID==0 & !is.na(PerfSpell_Num) & PerfSpell_Counter==1, #& Partition == "Observed", 
+datSurv_NoTruEnd <- subset(datCredit_real, !is.na(PerfSpell_Num) & PerfSpell_Counter==1, #& Partition == "Observed", 
                   select=c("LoanID", "PerfSpell_Key", "PerfSpell_Num", "TimeInPerfSpell","PerfSpell_Age", 
                            "PerfSpellResol_Type_Hist")); gc()
 rm(datCredit_real); gc()

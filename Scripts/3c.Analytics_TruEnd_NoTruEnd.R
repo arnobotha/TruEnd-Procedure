@@ -33,17 +33,16 @@ dpi <- 180 # graphical scaling factor
 
 # --- 1. Load TruEnd-treated data
 
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-TruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-TruEnd"), tempPath)
 
 # - Sample accordingly | First record per default spell, itself resolved
-datCredit_TruEnd <- subset(datCredit_real, ExclusionID==0 & !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
+datCredit_TruEnd <- subset(datCredit_real, !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
                              DefSpell_Counter==1, 
                          select=c("LoanID", "Date", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
                                   "DefSpellResol_Type_Hist", "Principal", "Balance", "InterestRate_Nom", "LossRate_Real")); gc()
 
 # - Sample accordingly | Account-level summary
-datCreditAggr_TruEnd <- datCredit_real[ExclusionID==0, 
-                                         list(DefSpells_Num = max(DefSpell_Num, na.rm=T), LoanAge = Age_Adj[.N],
+datCreditAggr_TruEnd <- datCredit_real[, list(DefSpells_Num = max(DefSpell_Num, na.rm=T), LoanAge = Age_Adj[.N],
                                               Balance_End = Balance[.N], Principal_Start = Principal[1], 
                                               WOff = max(WOff_Ind, na.rm=T), ZeroBal_Start = max(ZeroBal_Start, na.rm=T),
                                               Event_Type=Event_Type[.N], Event_Time = Event_Time[.N], LossRate = mean(LossRate_Real,na.rm=T)), 
@@ -54,17 +53,16 @@ rm(datCredit_real); gc()
 
 # --- 2. Load TruEnd-untreated data
 
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-NoTruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-NoTruEnd"), tempPath)
 
 # - Sample accordingly | First record per default spell, itself resolved
-datCredit_NoTruEnd <- subset(datCredit_real, ExclusionID==0 & !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
+datCredit_NoTruEnd <- subset(datCredit_real, !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
                                DefSpell_Counter==1, 
                              select=c("LoanID", "Date", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
                                       "DefSpellResol_Type_Hist", "Principal", "Balance", "InterestRate_Nom", "LossRate_Real")); gc()
 
 # - Sample accordingly | Account-level summary
-datCreditAggr_NoTruEnd <- datCredit_real[ExclusionID==0, 
-                                         list(DefSpells_Num = max(DefSpell_Num, na.rm=T), LoanAge = Age_Adj[.N],
+datCreditAggr_NoTruEnd <- datCredit_real[, list(DefSpells_Num = max(DefSpell_Num, na.rm=T), LoanAge = Age_Adj[.N],
                                               Balance_End = Balance[.N], Principal_Start = Principal[1], 
                                               WOff = max(WOff_Ind, na.rm=T), ZeroBal_Start = max(ZeroBal_Start, na.rm=T),
                                               Event_Type=Event_Type[.N], Event_Time = Event_Time[.N], LossRate = mean(LossRate_Real,na.rm=T)), 

@@ -1,6 +1,7 @@
 # ============================== Discount Rate Comparison ================================
 # A case study for analysing the discount rates and subsequent realised losses 
 # across a few calculation methods for a single loan with multiple default spells
+# TruEnd-procedure applied.
 # ---------------------------------------------------------------------------------------
 # PROJECT TITLE: TruEnd-procedure
 # SCRIPT AUTHOR(S): Dr Arno Botha
@@ -11,13 +12,11 @@
 #   - 2a.Data_Prepare_Credit_Basic.R
 #   - 2b.Date_Prepare_Credit_Advanced.R
 #   - 2c(i).Data_Prepare_Credit_TruEnd.R
-#   - 2c(ii).Data_Prepare_Credit_NoTruEnd.R
 #   - 2d(i).Data_Enrich_TruEnd.R
-#   - 2d(ii).Data_Enrich_NoTruEnd.R
-#   - 3b(i).Analytics_DiscountRates_RealisedLosses.R
+#   - 2e(i).Data_Exclusions_TruEnd.R
 #
 # -- Inputs:
-#   - datCredit_real | Enhanced version of input dataset (script 2b)
+#   - datCredit_real | Enhanced versions of input dataset (script 2e(i))
 #
 # -- Outputs:
 #   - lookup | loan history (1 default spell only) for case study
@@ -30,10 +29,10 @@
 # ------ Setup
 
 # --- 1. Load TruEnd-treated data and create lookups
-if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final3-TruEnd"), tempPath)
+if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final4-TruEnd"), tempPath)
 
 # - Lookup: 1 default spell
-lookupID <- datCredit_real[LossRate_Real < 0 & ExclusionID==0 & !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
+lookupID <- datCredit_real[LossRate_Real < 0 & !is.na(DefSpell_Num) & DefSpellResol_Type_Hist != "Censored" & 
                              DefSpell_Counter==1, DefSpell_Key][1]
 lookup <- subset(datCredit_real, DefSpell_Key == lookupID)
 lookup <- subset(lookup, select=c("LoanID", "Date", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
@@ -44,7 +43,7 @@ lookup2 <- subset(datCredit_real, LoanID == lookupID2)
 lookup2 <- subset(lookup2, select=c("LoanID", "Date", "DefSpell_Key", "DefSpell_Num", "TimeInDefSpell","DefSpell_Age", 
                                     "DefSpellResol_Type_Hist", "Principal", "InterestRate_Nom", "Balance", "Instalment", "Receipt_Inf", "Arrears"))
 
-# - save lookups to disk
+# - save lookups to disk | LoanID: 138602
 write_csv(lookup, paste0( genObjPath, "Example1_DefaultSpell.csv"))
 write_csv(lookup2, paste0( genObjPath, "Example1_AllHistory.csv"))
 
