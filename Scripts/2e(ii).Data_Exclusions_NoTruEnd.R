@@ -86,7 +86,7 @@ pack.ffdf(paste0(genObjPath,"Exclusions-NoTruEnd-Enriched"), datExclusions);
 datCredit_real <- subset(datCredit_real, ExclusionID == 0); gc()
 
 # - Successful?
-cat( (datCredit_real[ExclusionID > 0, .N] == 0) %?% "SAFE: Excluxsions applied successfully.\n" %:%
+cat( (datCredit_real[ExclusionID > 0, .N] == 0) %?% "SAFE: Exclusions applied successfully.\n" %:%
        "WARNING: Some Exclusions failed to apply.\n")
 
 # - Remove unnecessary variables
