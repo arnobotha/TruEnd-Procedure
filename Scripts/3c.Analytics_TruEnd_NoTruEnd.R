@@ -133,7 +133,7 @@ datCredit_TruEnd[, Scenario := "Treated with TruEnd-procedure"]
 datCredit_TruEnd_W <- subset(datCredit_TruEnd, Event == "Write-off")
 
 # - graphing parameters
-col.v <- brewer.pal(10, "Paired")[c(8,6)]
+vCol <- brewer.pal(10, "Paired")[c(8,6)]
 
 # - Aesthetic engineering: Statistical Summaries
 meanLoss_TruEnd <- mean(datCredit_TruEnd$LossRate_Real, na.rm=T)
@@ -143,11 +143,11 @@ mix_WC_TruEnd <- datCredit_TruEnd_W[, .N] / datCredit_TruEnd[, .N]
 # - main graphs a) Overall LGD distribution
 (g1 <- ggplot(datCredit_TruEnd, aes(x=LossRate_Real)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density)), alpha=0.4, bins=round(2*datCredit_TruEnd[,.N]^(1/3)),
-                   position="identity", fill=col.v[1], colour=col.v[1]) + 
-    geom_density(linewidth=1, colour=col.v[1], linetype="dotted") + 
-    geom_vline(xintercept=meanLoss_TruEnd, linewidth=0.6, colour=col.v[1], linetype="dashed") + 
+                   position="identity", fill=vCol[1], colour=vCol[1]) + 
+    geom_density(linewidth=1, colour=vCol[1], linetype="dotted") + 
+    geom_vline(xintercept=meanLoss_TruEnd, linewidth=0.6, colour=vCol[1], linetype="dashed") + 
     annotate(geom="text", x=meanLoss_TruEnd*0.8, y=20, family=chosenFont,
-             label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_TruEnd*100), "%"), size=3, colour=col.v[1], angle=90) +     
+             label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_TruEnd*100), "%"), size=3, colour=vCol[1], angle=90) +     
     # facets & scale options
     labs(x=bquote({Realised~loss~rate~italic(L)}), 
          y="Density of resolved defaults [cures/write-offs]") + 
@@ -162,11 +162,11 @@ mix_WC_TruEnd <- datCredit_TruEnd_W[, .N] / datCredit_TruEnd[, .N]
 # - miniplot for main graph | Write-offs only
 (g2 <- ggplot(datCredit_TruEnd_W, aes(x=LossRate_Real)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density)), alpha=0.4, bins=round(2*datCredit_TruEnd_W[,.N]^(1/3)), 
-                   position="identity", fill=col.v[2], colour=col.v[2]) + 
-    geom_density(linewidth=1, colour=col.v[2], linetype="dotted") + 
-    geom_vline(xintercept=MeanLoss_TruEnd_W, linewidth=0.6, colour=col.v[2], linetype="dashed") + 
+                   position="identity", fill=vCol[2], colour=vCol[2]) + 
+    geom_density(linewidth=1, colour=vCol[2], linetype="dotted") + 
+    geom_vline(xintercept=MeanLoss_TruEnd_W, linewidth=0.6, colour=vCol[2], linetype="dashed") + 
     annotate(geom="text", x=MeanLoss_TruEnd_W*0.93,  y=3, family=chosenFont,
-             label = paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_TruEnd_W*100), "%"), size=3, colour=col.v[2], angle=90) +     
+             label = paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_TruEnd_W*100), "%"), size=3, colour=vCol[2], angle=90) +     
     # facets & scale options
     labs(x="", y="", title=paste0("Write-offs only (", sprintf("%.0f", mix_WC_TruEnd*100), "%)")) + 
     theme(legend.position="none", text=element_text(size=12, family="Cambria"),
@@ -204,7 +204,7 @@ datCredit_NoTruEnd[, Scenario := "Untreated with TruEnd-procedure"]
 datCredit_NoTruEnd_W <- subset(datCredit_NoTruEnd, Event == "Write-off")
 
 # - graphing parameters
-col.v <- brewer.pal(10, "Paired")[c(8,6)]
+vCol <- brewer.pal(10, "Paired")[c(8,6)]
 
 # - Aesthetic engineering: Statistical Summaries
 meanLoss_NoTruEnd <- mean(datCredit_NoTruEnd$LossRate_Real, na.rm=T)
@@ -214,11 +214,11 @@ mix_WC_NoTruEnd <- datCredit_NoTruEnd_W[, .N] / datCredit_NoTruEnd[, .N]
 # - main graphs a) Overall LGD distribution
 (g1 <- ggplot(datCredit_NoTruEnd, aes(x=LossRate_Real)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density)), alpha=0.4, bins=round(2*datCredit_NoTruEnd[,.N]^(1/3)),
-                   position="identity", fill=col.v[1], colour=col.v[1]) + 
-    geom_density(linewidth=1, colour=col.v[1], linetype="dotted") + 
-    geom_vline(xintercept=meanLoss_NoTruEnd, linewidth=0.6, colour=col.v[1], linetype="dashed") + 
+                   position="identity", fill=vCol[1], colour=vCol[1]) + 
+    geom_density(linewidth=1, colour=vCol[1], linetype="dotted") + 
+    geom_vline(xintercept=meanLoss_NoTruEnd, linewidth=0.6, colour=vCol[1], linetype="dashed") + 
     annotate(geom="text", x=meanLoss_NoTruEnd*0.8, y=20, family=chosenFont,
-             label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_NoTruEnd*100), "%"), size=3, colour=col.v[1], angle=90) +     
+             label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_NoTruEnd*100), "%"), size=3, colour=vCol[1], angle=90) +     
     # facets & scale options
     labs(x=bquote({Realised~loss~rate~italic(L)}), 
          y="Density of resolved defaults [cures/write-offs]") + 
@@ -233,11 +233,11 @@ mix_WC_NoTruEnd <- datCredit_NoTruEnd_W[, .N] / datCredit_NoTruEnd[, .N]
 # - miniplot for main graph | Write-offs only
 (g2 <- ggplot(datCredit_NoTruEnd_W, aes(x=LossRate_Real)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density)), alpha=0.4, bins=round(2*datCredit_NoTruEnd_W[,.N]^(1/3)), 
-                   position="identity", fill=col.v[2], colour=col.v[2]) + 
-    geom_density(linewidth=1, colour=col.v[2], linetype="dotted") + 
-    geom_vline(xintercept=MeanLoss_NoTruEnd_W, linewidth=0.6, colour=col.v[2], linetype="dashed") + 
+                   position="identity", fill=vCol[2], colour=vCol[2]) + 
+    geom_density(linewidth=1, colour=vCol[2], linetype="dotted") + 
+    geom_vline(xintercept=MeanLoss_NoTruEnd_W, linewidth=0.6, colour=vCol[2], linetype="dashed") + 
     annotate(geom="text", x=MeanLoss_NoTruEnd_W*0.93,  y=3, family=chosenFont,
-             label = paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_NoTruEnd_W*100), "%"), size=3, colour=col.v[2], angle=90) +     
+             label = paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_NoTruEnd_W*100), "%"), size=3, colour=vCol[2], angle=90) +     
     # facets & scale options
     labs(x="", y="", title=paste0("Write-offs only (", sprintf("%.0f", mix_WC_NoTruEnd*100), "%)")) + 
     theme(legend.position="none", text=element_text(size=12, family="Cambria"),
@@ -275,7 +275,7 @@ datAnnotate <- data.table(MeanLoss=c(MeanLoss_TruEnd_W,MeanLoss_NoTruEnd_W), Dat
                           Label_x=c(MeanLoss_TruEnd_W*0.9,MeanLoss_NoTruEnd_W*1.1), Label_y=c(2,2))
 
 # - graphing parameters
-col.v <- brewer.pal(8, "Dark2")[c(1,2)]
+vCol <- brewer.pal(8, "Dark2")[c(1,2)]
 labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 
 # - main graphs a) Overall LGD distribution
@@ -289,8 +289,8 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
     labs(x=bquote({Realised~loss~rate~italic(L)}), 
          y="Density of resolved defaults [write-offs]") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
-    scale_color_manual(name="Datatset", labels=labels.v, values=col.v) + 
-    scale_fill_manual(name="Datatset", labels=labels.v, values=col.v) + 
+    scale_color_manual(name="Datatset", labels=labels.v, values=vCol) + 
+    scale_fill_manual(name="Datatset", labels=labels.v, values=vCol) + 
     scale_linetype_discrete(name="Datatset", labels=labels.v) + 
     scale_x_continuous(breaks=pretty_breaks(), label=percent)
 )

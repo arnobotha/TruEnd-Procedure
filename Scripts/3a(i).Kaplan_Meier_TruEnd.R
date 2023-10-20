@@ -37,7 +37,7 @@ portName <- "FNB SLC"
 
 
 # - graphing parameters
-col.v <- brewer.pal(10, "Paired")[c(10)]
+vCol <- brewer.pal(10, "Paired")[c(10)]
 
 
 
@@ -166,8 +166,8 @@ AEs1_1 <- Combined_Ft_p1_1[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(Combined_Ft_p1_1$Value, na.rm=T)
@@ -180,9 +180,9 @@ aggrSeries1_1 <- max(Combined_Ft_p1_1$Value, na.rm=T)
     annotate("text", x=12, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v)+
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v) +
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
   
@@ -200,8 +200,8 @@ AEs1_2 <- Combined_Ft_p1_2[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(Combined_Ft_p1_2$Value, na.rm=T)
@@ -214,9 +214,9 @@ aggrSeries1_2 <- max(Combined_Ft_p1_2$Value, na.rm=T)
     annotate("text", x=72, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v)+
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v) +
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
 
@@ -242,8 +242,8 @@ AEs2_1 <- Combined_ht_p2_1[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_1$Value, na.rm=T)
@@ -255,9 +255,9 @@ aggrSeries2_1 <- max(Combined_ht_p2_1$Value, na.rm=T)
     annotate("text", x=50, y=aggrSeries2_1*0.1, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v)+
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v) +
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
 
@@ -275,8 +275,8 @@ AEs2_2 <- Combined_ht_p2_2[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_2$Value, na.rm=T)
@@ -289,9 +289,9 @@ aggrSeries2_1 <- max(Combined_ht_p2_2$Value, na.rm=T)
     annotate("text", x=110, y=aggrSeries2_1*0.96, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v) +
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v) +
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
 
@@ -325,8 +325,8 @@ AEs1_3 <- Combined_Ft_p1_3[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(Combined_Ft_p1_3$Value, na.rm=T)
@@ -339,9 +339,9 @@ aggrSeries1_2 <- max(Combined_Ft_p1_3$Value, na.rm=T)
     annotate("text", x=140, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v)+
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v))
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
 
 
 dpi <- 180
@@ -358,8 +358,8 @@ AEs2_3 <- Combined_ht_p2_3[,list(AE = abs(diff(Value))), by=list(Time)]
 
 # - Graphing parameters
 chosenFont <- "Cambria"
-col.v <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-label.v <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
              "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_3$Value, na.rm=T)
@@ -372,9 +372,9 @@ aggrSeries2_1 <- max(Combined_ht_p2_3$Value, na.rm=T)
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=label.v) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=label.v) +
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=label.v))
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
 
 
 dpi <- 180
@@ -474,7 +474,7 @@ surv_summary(kmDef_woff_real_spell1c_TruEnd)
 # --- Graphing survival and related quantities
 # - Survival probability, S(t)=y
 (gsurv1c_TruEnd_a <- ggsurvplot(kmDef_woff_real_spell1c_TruEnd, fun="pct", conf.int=T, legend="none", 
-                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=col.v,
+                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=vCol,
                          xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                          ylab = bquote(Survival~probability~'[WOFF]'~italic(S(t))*': spell-level (Kaplan-Meier)'),
                          xlim=c(0, 240), surv.median.line = "hv", censor=F, 
@@ -487,7 +487,7 @@ surv_summary(kmDef_woff_real_spell1c_TruEnd)
 
 # - Cumulative event/lifetime probability: ;, , so F(t)=1-S(t)
 (gsurv1c_TruEnd_b <- ggsurvplot(kmDef_woff_real_spell1c_TruEnd, fun="event", conf.int=T, surv.scale = "percent", legend="none", 
-                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=col.v,
+                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=vCol,
                          xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                          ylab = bquote(Cumulative~lifetime~distribution~'[WOFF]'~italic(F(t))*': spell-level (Kaplan-Meier)'),
                          xlim=c(0, 240), censor=F, 
@@ -498,7 +498,7 @@ surv_summary(kmDef_woff_real_spell1c_TruEnd)
 
 # - Cumulative hazard: f(t)=-log(y), so H(t) = -log(S(t)). Discrete-variant: f(t)=-sum{ln(1-h(t))}
 (gsurv1c_TruEnd_c <- ggsurvplot(kmDef_woff_real_spell1c_TruEnd, fun="cumhaz",conf.int=T, legend="none", 
-                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=col.v,
+                         break.time.by=round(max(kmDef_woff_real_spell1c_TruEnd$time)/8), palette=vCol,
                          xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                          ylab = bquote(Cumulative~hazard~distribution~'[WOFF]'~italic(H(t))*': spell-level (Nelson-Aalen)'),
                          xlim=c(0, 240), censor=F, 
@@ -525,18 +525,18 @@ all.equal(haz_dat_TruEnd$Surv_KM, haz_dat_TruEnd$Surv_KM_Disc) # Should be TRUE
 all.equal(haz_dat_TruEnd$CumulHazard, haz_dat_TruEnd$CumulHazard_Disc)
 
 # graphing parameters
-col.v <- brewer.pal(10, "Paired")[c(10,9)]
+vCol <- brewer.pal(10, "Paired")[c(10,9)]
 span.s <- 0.1
-label.v <- paste0("Loess-smoothed hazard [span: ", span.s, "]")
+vLabel <- paste0("Loess-smoothed hazard [span: ", span.s, "]")
 # graph object for shorter time, informed by previous graphs
 (gsurv1c_TruEnd_d <- ggplot(haz_dat_TruEnd[Time<=240,], aes(x=Time,y=hazard)) + theme_minimal() +
-    geom_line(linetype="solid", colour=col.v[1]) + geom_point(colour=col.v[1]) + 
+    geom_line(linetype="solid", colour=vCol[1]) + geom_point(colour=vCol[1]) + 
     geom_smooth(aes(colour=Group, fill=Group), se=T, method="loess", span=span.s, alpha=0.25, linetype="dotted") +
     labs(y=bquote(plain(Estimated~hazard*' function [WOFF]')~italic(h(t))*': spell-level (Kaplan-Meier)'), 
          x=bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell")) + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
-    scale_colour_manual(name="", values=col.v[2], labels=label.v) + 
-    scale_fill_manual(name="", values=col.v[2], labels=label.v) + 
+    scale_colour_manual(name="", values=vCol[2], labels=vLabel) + 
+    scale_fill_manual(name="", values=vCol[2], labels=vLabel) + 
     scale_y_continuous(breaks=breaks_pretty(), label=percent) + 
     scale_x_continuous(breaks=breaks_pretty(n=8), label=comma))
 
@@ -575,7 +575,7 @@ surv_summary(kmDef_woff_real_spell1c_NoTruEnd)
 # --- Graphing survival and related quantities
 # - Survival probability, S(t)=y
 (gsurv1c_NoTruEnd_a <- ggsurvplot(kmDef_woff_real_spell1c_NoTruEnd, fun="pct", conf.int=T, legend="none", 
-                                  break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=col.v,
+                                  break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=vCol,
                                   xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                                   ylab = bquote(Survival~probability~'[WOFF]'~italic(S(t))*': spell-level (Kaplan-Meier)'),
                                   xlim=c(0, 240), surv.median.line = "hv", censor=F, 
@@ -588,7 +588,7 @@ surv_summary(kmDef_woff_real_spell1c_NoTruEnd)
 
 # - Cumulative event/lifetime probability: ;, , so F(t)=1-S(t)
 (gsurv1c_NoTruEnd_b <- ggsurvplot(kmDef_woff_real_spell1c_NoTruEnd, fun="event", conf.int=T, surv.scale = "percent", legend="none", 
-                                break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=col.v,
+                                break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=vCol,
                                 xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                                 ylab = bquote(Cumulative~lifetime~distribution~'[WOFF]'~italic(F(t))*': spell-level (Kaplan-Meier)'),
                                 xlim=c(0, 240), censor=F, 
@@ -599,7 +599,7 @@ surv_summary(kmDef_woff_real_spell1c_NoTruEnd)
 
 # - Cumulative hazard: f(t)=-log(y), so H(t) = -log(S(t)). Discrete-variant: f(t)=-sum{ln(1-h(t))}
 (gsurv1c_NoTruEnd_c <- ggsurvplot(kmDef_woff_real_spell1c_NoTruEnd, fun="cumhaz",conf.int=T, legend="none", 
-                                break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=col.v,
+                                break.time.by=round(max(kmDef_woff_real_spell1c_NoTruEnd$time)/8), palette=vCol,
                                 xlab = bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell"),
                                 ylab = bquote(Cumulative~hazard~distribution~'[WOFF]'~italic(H(t))*': spell-level (Nelson-Aalen)'),
                                 xlim=c(0, 240), censor=F, 
@@ -626,18 +626,18 @@ all.equal(haz_dat_NoTruEnd$Surv_KM, haz_dat_NoTruEnd$Surv_KM_Disc) # Should be T
 all.equal(haz_dat_NoTruEnd$CumulHazard, haz_dat_NoTruEnd$CumulHazard_Disc)
 
 # graphing parameters
-col.v <- brewer.pal(10, "Paired")[c(10,9)]
+vCol <- brewer.pal(10, "Paired")[c(10,9)]
 span.s <- 0.1
-label.v <- paste0("Loess-smoothed hazard [span: ", span.s, "]")
+vLabel <- paste0("Loess-smoothed hazard [span: ", span.s, "]")
 # graph object for shorter time, informed by previous graphs
 (gsurv1c_NoTruEnd_d <- ggplot(haz_dat_NoTruEnd[Time<=240,], aes(x=Time,y=hazard)) + theme_minimal() +
-    geom_line(linetype="solid", colour=col.v[1]) + geom_point(colour=col.v[1]) + 
+    geom_line(linetype="solid", colour=vCol[1]) + geom_point(colour=vCol[1]) + 
     geom_smooth(aes(colour=Group, fill=Group), se=T, method="loess", span=span.s, alpha=0.25, linetype="dotted") +
     labs(y=bquote(plain(Estimated~hazard*' function [WOFF]')~italic(h(t))*': spell-level (Kaplan-Meier)'), 
          x=bquote(Discrete~time~italic(t)*" (months) in default spell: Multi-spell")) + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
-    scale_colour_manual(name="", values=col.v[2], labels=label.v) + 
-    scale_fill_manual(name="", values=col.v[2], labels=label.v) + 
+    scale_colour_manual(name="", values=vCol[2], labels=vLabel) + 
+    scale_fill_manual(name="", values=vCol[2], labels=vLabel) + 
     scale_y_continuous(breaks=breaks_pretty(), label=percent) + 
     scale_x_continuous(breaks=breaks_pretty(n=8), label=comma))
 

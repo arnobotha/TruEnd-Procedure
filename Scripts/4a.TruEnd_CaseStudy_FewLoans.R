@@ -51,21 +51,28 @@ write_xlsx(datGiven, paste0(genObjPath, "Extract_", caseStudy_Name, ".xlsx"))
 # - Save to disk (zip) for quick disk-based retrieval later
 pack.ffdf(paste0(genObjPath,"Extract_", caseStudy_Name), datGiven)
 
+
+
+
 # --- 1. Parameters for TruEnd-procedure
+
+# - Confirm extracted case study is loaded into memory
+if (!exists('datGiven')) unpack.ffdf(paste0(genObjPath,"Extract_", caseStudy_Name), tempPath)
+
 minLength <- 1 # minimum length (in months) of an isolated TZB-regime, by definition
 tau <- 6 # length of non-TZB period that should precede an isolated TZB-regime, for M2-purposes
 
 # - Define threshold vector for primary control variable: [Balance]
-thres.v <- c(0,10,25,50,75,100,150,200,250,300,400,500,750,1000,1500,2000,3000,4000,5000,7500,10000) # expanded search space
-thres.v <- c(0,10,25,50,75,100,150,200,250,300,400,500)
+vThres <- c(0,10,25,50,75,100,150,200,250,300,400,500,750,1000,1500,2000,3000,4000,5000,7500,10000) # expanded search space
+vThres <- c(0,10,25,50,75,100,150,200,250,300,400,500)
 
 # - Define threshold vector for secondary/optional control variable: [Principal_Ratio]
-# NOTE: If secondary control variable is discarded, then thres2.v should have a single 0-value
+# NOTE: If secondary control variable is discarded, then vThres2 should have a single 0-value
 # This should ensure the proper working of the internal logic within the TruEnd-functions
-thres2.v <-  c(0, 0.005, 0.01, 0.015, 0.02)
+vThres2 <-  c(0, 0.005, 0.01, 0.015, 0.02)
 
 # - Calculate overall number of thresholds
-numThres <- length(thres.v) * ( (length(thres2.v) > 0) %?% length(thres2.v) %:% 1)
+numThres <- length(vThres) * ( (length(vThres2) > 0) %?% length(vThres2) %:% 1)
 
 
 
@@ -96,27 +103,24 @@ timeVar <- "Counter"
 # - Abstract the control variable [Balance] matrix from data
 # NOTE: rows are periods (up to maximum observed period), columns are loan accounts
 matControl <- as.matrix(pivot_wider(data=datGiven[order(get(accVar)),list(LoanID = get(accVar), Time = get(timeVar), ControlVar = get(controlVar))], 
-                                    id_cols=LoanID:Time, names_from=LoanID, values_from=ControlVar))[,-1]
+                                    id_cols=Time, names_from=LoanID, values_from=ControlVar))[,-1]
 
 # - Abstract a secondary control variable [Balance-to-Principal] matrix from data
 # NOTE: rows are periods (up to maximum observed period), columns are loan accounts
 matControl2 <- as.matrix(pivot_wider(data=datGiven[order(get(accVar)),list(LoanID = get(accVar), Time = get(timeVar), ControlVar = get(controlVar2))], 
-                                    id_cols=LoanID:Time, names_from=LoanID, values_from=ControlVar))[,-1]
+                                    id_cols=Time, names_from=LoanID, values_from=ControlVar))[,-1]
 
 # - Abstract the balance matrix from data for calculation of M1 and M2 measures later
 # NOTE: rows are periods (up to maximum observed period), columns are loan accounts
 matBalance <- as.matrix(pivot_wider(data=datGiven[order(get(accVar)),list(LoanID = get(accVar), Time = get(timeVar), Balance = get(balanceVar))], 
-                                    id_cols=LoanID:Time, names_from=LoanID, values_from=Balance))[,-1]
-
-# - Abstract the number of accounts from data
-nAcc <- ncol(matControl)
+                                    id_cols=Time, names_from=LoanID, values_from=Balance))[,-1]
 
 # - Abstract the vector of observed maturities from data
 vecMaturity <- datGiven[order(get(accVar)),list(Freq = max(get(timeVar),na.rm=T)), by=list(get(accVar))]$Freq
 
-# - Compile the TruEnd-suite of evaluation (and auxiliary) functions
-source(paste0(path_cust,'TruEnd.R'))
-
+# - Define objective function and associated argument list
+objFunc <- function(vM1, vM2) {sum(vM2-vM1, na.rm=T)}
+args <- c("vM2", "vM1")
 
 
 
@@ -133,13 +137,13 @@ datResults <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
                         # - testing conditions
                         # it <- 21
 
-                        datResults.interim <- TruEnd_outer(matControl=matControl, thres=thres.v[it %% length(thres.v) + (it %% length(thres.v) == 0)*length(thres.v)], 
-                                                           matControl2=matControl2, thres2 = thres2.v[(floor((it-1) / length(thres.v))+1)], 
+                        datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
+                                                           matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
                                                            controlVar=controlVar, controlVar2=controlVar2, tau=tau, matBalance=matBalance,
                                                            vecMaturity=vecMaturity, it=it, numThres=numThres, minLength=minLength, 
                                                            controlVar2VoidVal=controlVar2VoidVal, reportFlag=T, logName=caseStudy_Name,
-                                                           f.obj=function(M1.v, M2.v) {mean(M2.v-M1.v)}, args=list(M2.v,M1.v))
-                      }
+                                                           objFunc=objFunc, args=args)
+}
 stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
 
 # - Save to disk (zip) for quick disk-based retrieval later
@@ -149,11 +153,8 @@ pack.ffdf(paste0(genObjPath,"Results_", caseStudy_Name), datResults)
 cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
     file=paste0("assesslog_", caseStudy_Name,".txt"), append=T)
 
-### ARNO: Passing of a given objective function odes not yet work in the code above. Fix.
 
-f.obj=function(M1.v, M2.v) {mean(M2.v-M1.v)}
-args=list(M2.v,M1.v)
-do.call(f.obj, args=args)
+
 
 # --- 3a. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
 
