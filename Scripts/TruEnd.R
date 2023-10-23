@@ -23,6 +23,9 @@ TruEnd_inner <- function(vGiven, thres=0, retType, minLength=2, nonTZB_Val=-1) {
   # vGiven <- matControl[,i]
   # retType <- "epiNum"
   
+  # Retain only NAs in given vector
+  vGiven <- vGiven[!is.na(vGiven)]
+  
   # - Find positions in reversed vector where threshold is triggered
   vFound <- which(rev(vGiven) <= thres)
   
@@ -74,14 +77,15 @@ TruEnd_inner <- function(vGiven, thres=0, retType, minLength=2, nonTZB_Val=-1) {
 # [objFunc]: Given objective function that accepts arguments in [args]
 # [args]: any external arguments required by [objFunc]; internally-calculated arguments include vM1, vM2, vT_z, vTruEnd_points, vTZB_len, vTruEnd_bal
 TruEnd_outer <- function(matControl, thres=0, controlVar, matBalance, vecMaturity, tau=6, it=1, numThres=1, minLength=1, 
-                         matControl2, thres2=0, controlVar2=NA, controlVar2VoidVal=0, reportFlag=F,logName="General",objFunc, args) {
+                         matControl2, thres2=0, controlVar2=NA, controlVar2VoidVal=0, reportFlag=F,logName="General",objFunc, args, ...) {
   
   
   # --- 1. Preliminaries 
   
   # - testing conditions
-  # it <- 21; reportFlag <- T; thres <- vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)]
+  # it <- 9; reportFlag <- F; thres <- vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)]
   # thres2 <- vThres2[(floor((it-1) / length(vThres))+1)]
+  # objFunc <- function(vM1, vM2) {sum(vM2-vM1, na.rm=T)}; args <- c("vM2", "vM1")
   
   
   if (reportFlag & (is.na(controlVar2) | thres2==controlVar2VoidVal)) {
@@ -94,7 +98,7 @@ TruEnd_outer <- function(matControl, thres=0, controlVar, matBalance, vecMaturit
   }
   
   # - Abstract the number of accounts from data
-  nAcc <- ncol(matControl)
+  nAcc <- NCOL(matControl)
   
   
   # --- 2. Calculate various vectors of interest
@@ -103,30 +107,60 @@ TruEnd_outer <- function(matControl, thres=0, controlVar, matBalance, vecMaturit
   vT_z <- sapply(1:nAcc, function(i){
     # testing: i <- 1
     if (is.na(controlVar2) | thres2==controlVar2VoidVal) { # only primary control variable
-      TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z", minLength=minLength)
+      if (nAcc > 1) {
+        TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z", minLength=minLength)  
+      } else {
+        TruEnd_inner(vGiven=matControl, thres=thres, retType="t_z", minLength=minLength)
+      }
+      
     } else { # 2 control variables given, use minimum to coalesce signals
-      min(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z", minLength=minLength),
-          TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="t_z", minLength=minLength))
+      if (nAcc > 1) {
+        min(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="t_z", minLength=minLength)) 
+      } else {
+        min(TruEnd_inner(vGiven=matControl, thres=thres, retType="t_z", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2, thres=thres2, retType="t_z", minLength=minLength))
+      }
     }
   })
   
   # - Find preliminary "true end" points
   vTruEnd_points <- sapply(1:nAcc, function(i){
+    # testing conditions
+    # i <- 1
     if (is.na(controlVar2) | thres2==controlVar2VoidVal) {  # only primary control variable
-      TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z-1", minLength=minLength)  
+      if (nAcc > 1) {
+        TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z-1", minLength=minLength)
+      } else {
+        TruEnd_inner(vGiven=matControl, thres=thres, retType="t_z-1", minLength=minLength)
+      }
     } else { # 2 control variables given, use minimum to coalesce signals
-      min(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z-1", minLength=minLength),
-          TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="t_z-1", minLength=minLength))
+      if (nAcc > 1) {
+        min(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="t_z-1", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="t_z-1", minLength=minLength))
+      } else {
+        min(TruEnd_inner(vGiven=matControl, thres=thres, retType="t_z-1", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2, thres=thres2, retType="t_z-1", minLength=minLength))
+      }
     }
   })
   
   # - Calculate length of isolated TZB-regimes, if found
   vTZB_len <- sapply(1:nAcc, function(i){
     if (is.na(controlVar2) | thres2==controlVar2VoidVal) {  # only primary control variable
-      TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="tzb_len", minLength=minLength)
+      if (nAcc > 1) {
+        TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="tzb_len", minLength=minLength)
+      } else {
+        TruEnd_inner(vGiven=matControl, thres=thres, retType="tzb_len", minLength=minLength)
+      }
     } else { # 2 control variables given, use maximum to coalesce signals
-      max(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="tzb_len", minLength=minLength),
-          TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="tzb_len", minLength=minLength))
+      if (nAcc > 1) {
+        max(TruEnd_inner(vGiven=matControl[,i], thres=thres, retType="tzb_len", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2[,i], thres=thres2, retType="tzb_len", minLength=minLength))
+      } else {
+        max(TruEnd_inner(vGiven=matControl, thres=thres, retType="tzb_len", minLength=minLength),
+            TruEnd_inner(vGiven=matControl2, thres=thres2, retType="tzb_len", minLength=minLength))
+      }
     }
   })
   
@@ -159,19 +193,20 @@ TruEnd_outer <- function(matControl, thres=0, controlVar, matBalance, vecMaturit
   
 
   # --- 3. Evaluate objective function, given measures M1 and M2
-  # Calculate gien objective function
+  # Calculate given objective function
   vObjFunc <- do.call(objFunc, args= setNames( lapply(1:length(args), function(i) {get(args[i])} ), args) ) 
   
   
   # --- 4. Concatenate results
   datResults.interim <- data.table(ResultSet = logName, Control = controlVar, Threshold = thres, Control2 = controlVar2, Threshold2 = thres2,
+                                   Accs_Count = nAcc,
                                    FalseEnd_mean = mean(vecMaturity, na.rm=T), FalseEnd_sd = sd(vecMaturity, na.rm=T),
                                    TruEnd_mean = mean(vTruEnd_points, na.rm=T), TruEnd_sd = sd(vTruEnd_points, na.rm=T),
                                    TZB_Length_mean = mean(vTZB_len, na.rm=T), TZB_Length_sd = sd(vTZB_len, na.rm=T),
                                    TruBal_mean = mean(vTruEnd_bal, na.rm=T), TruBal_sd = sd(vTruEnd_bal, na.rm=T),
                                    M1_mean = mean(vM1, na.rm=T), M1_sd = sd(vM1, na.rm=T),
                                    M2_mean = mean(vM2, na.rm=T), M2_sd = sd(vM2, na.rm=T),
-                                   TZB_prevalence = sum(vT_z>=0)/nAcc, Objective = vObjFunc[1]
+                                   TZB_prevalence = sum(vT_z>=0)/nAcc,Objective = vObjFunc[1]
   )
   
   return (datResults.interim)

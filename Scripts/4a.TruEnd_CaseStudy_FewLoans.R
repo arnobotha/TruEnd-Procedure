@@ -1,5 +1,5 @@
 # ================================== TruEnd-procedure ===================================
-# Case-study: Applying the TruEnd-procedure on a small set of real-world loans
+# Case-study: Applying the TruEnd-procedure on a very small set of real-world loans
 # ---------------------------------------------------------------------------------------
 # PROJECT TITLE: TruEnd-procedure
 # SCRIPT AUTHOR(S): Dr Arno Botha
@@ -26,9 +26,9 @@
 
 
 
-# ------ 1. Analysis
+# ------ 1. Preliminaries
 
-# --- 0. Preliminaries
+# --- 0. Setup
 
 caseStudy_Name <- "2Loan"
 
@@ -53,7 +53,6 @@ pack.ffdf(paste0(genObjPath,"Extract_", caseStudy_Name), datGiven)
 
 
 
-
 # --- 1. Parameters for TruEnd-procedure
 
 # - Confirm extracted case study is loaded into memory
@@ -64,21 +63,21 @@ tau <- 6 # length of non-TZB period that should precede an isolated TZB-regime, 
 
 # - Define threshold vector for primary control variable: [Balance]
 vThres <- c(0,10,25,50,75,100,150,200,250,300,400,500,750,1000,1500,2000,3000,4000,5000,7500,10000) # expanded search space
-vThres <- c(0,10,25,50,75,100,150,200,250,300,400,500)
 
 # - Define threshold vector for secondary/optional control variable: [Principal_Ratio]
-# NOTE: If secondary control variable is discarded, then vThres2 should have a single 0-value
+# NOTE: If secondary control variable is to be deactivated completely, then assign a single 0-value to vThres2
 # This should ensure the proper working of the internal logic within the TruEnd-functions
 vThres2 <-  c(0, 0.005, 0.01, 0.015, 0.02)
+vThres2 <-  c(0)
 
-# - Calculate overall number of thresholds
+# - Calculate overall number of thresholds across both control variables
 numThres <- length(vThres) * ( (length(vThres2) > 0) %?% length(vThres2) %:% 1)
 
 
 
 
 
-# -------- TruEnd-procedure
+# ------ 2. TruEnd-procedure
 # Isolating possible TZB-regimes of minimum length [minLength] for a given threshold [thres]
 #  for a given control variable [contVar] across given credit history, 
 #  indexed by account [accVar] and time [timeVar]. Inputs include:
@@ -94,6 +93,7 @@ controlVar2 <- "Principal_Ratio"
 controlVar2VoidVal <- 0 # threshold value at which secondary control variable is voided/discarded when finding TZB-regimes
 accVar <- "LoanID"
 timeVar <- "Counter"
+
 
 
 # --- 1. Preliminaries
@@ -118,13 +118,18 @@ matBalance <- as.matrix(pivot_wider(data=datGiven[order(get(accVar)),list(LoanID
 # - Abstract the vector of observed maturities from data
 vecMaturity <- datGiven[order(get(accVar)),list(Freq = max(get(timeVar),na.rm=T)), by=list(get(accVar))]$Freq
 
+
+
+
+# --- 2a. Create a multithreaded setup for testing each threshold | Candidate Objective Function 1
+
 # - Define objective function and associated argument list
+# A premature t_z-point will produce larger M1-values, i.e., we should minimise M1, or equivalently, maximise -M1
+# A delayed t_z-point will produce lower M2-values, i.e., we should maximise M2.
+# Therefore, pursuing both optimisations imply maximising (M2 - M1)
+# Best t_z given by maximising:
 objFunc <- function(vM1, vM2) {sum(vM2-vM1, na.rm=T)}
 args <- c("vM2", "vM1")
-
-
-
-# --- 2. Create a multithreaded setup for testing each threshold
 
 # - Setup & logging
 ptm <- proc.time() #IGNORE: for computation time calculation
@@ -135,7 +140,7 @@ cat("New Job: Applying TruEnd-procedure ..", file=paste0("assesslog_", caseStudy
 datResults <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
                       .packages='data.table', .export=c('TruEnd_outer', 'TruEnd_inner')) %dopar% {
                         # - testing conditions
-                        # it <- 21
+                        # it <- 6
 
                         datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
                                                            matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
@@ -147,7 +152,238 @@ datResults <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
 stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
 
 # - Save to disk (zip) for quick disk-based retrieval later
-pack.ffdf(paste0(genObjPath,"Results_", caseStudy_Name), datResults)
+pack.ffdf(paste0(genObjPath,"Results_Candidate1_", caseStudy_Name), datResults)
+
+# - Logging
+cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
+    file=paste0("assesslog_", caseStudy_Name,".txt"), append=T)
+
+
+# --- 2b. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
+
+# - Prepare results dataset
+datPlot <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
+                        names_to="Measure", values_to="Value") %>% as.data.table()
+# - Graph results
+ggplot(datPlot[Threshold<=2500, ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 1") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+
+
+
+
+# --- 3a. Create a multithreaded setup for testing each threshold | Candidate Objective Function 2
+
+# - Define objective function and associated argument list
+# M2's domain will typically be much larger than that of M1.
+# This implies that changes in M2 will affect f.obj1 much more than changes in M1,
+# which complicates the optimisation of f.obj1 with regard to M1
+# Therefore, define weights for each measure to downscale and upscale the influences of M2 and M1 respectively
+# These weights can be preset and left outside of the optimisation itself, just as a practical expedient for now
+w1 <- 1 # weight for M1 with its small domain
+w2 <- 0.05 # weight for M2 with its large domain, should logically be < w1
+# Best t_z given by maximising:
+objFunc <- function(vM1, vM2, w1=w1, w2=w2) {sum(w2*vM2 - w1*vM1, na.rm=T)}
+args <- c("vM2", "vM1", "w1", "w2")
+
+# - Setup & logging
+ptm <- proc.time() #IGNORE: for computation time calculation
+cl.port <- makeCluster(6); registerDoParallel(cl.port) # multi-threading setup
+cat("New Job: Applying TruEnd-procedure ..", file=paste0("assesslog_", caseStudy_Name,".txt"), append=F)
+
+# - Multithreaded for-loop
+datResults2 <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
+                      .packages='data.table', .export=c('TruEnd_outer', 'TruEnd_inner')) %dopar% {
+                        # - testing conditions
+                        # it <- 21
+                        
+                        datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
+                                                           matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
+                                                           controlVar=controlVar, controlVar2=controlVar2, tau=tau, matBalance=matBalance,
+                                                           vecMaturity=vecMaturity, it=it, numThres=numThres, minLength=minLength, 
+                                                           controlVar2VoidVal=controlVar2VoidVal, reportFlag=T, logName=caseStudy_Name,
+                                                           objFunc=objFunc, args=args, w1=w1, w2=w2)
+                      }
+stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
+
+# - Save to disk (zip) for quick disk-based retrieval later
+pack.ffdf(paste0(genObjPath,"Results_Candidate2_", caseStudy_Name), datResults2)
+
+# - Logging
+cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
+    file=paste0("assesslog_", caseStudy_Name,".txt"), append=T)
+
+
+# --- 3b. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
+
+# - Prepare results dataset
+datPlot <- pivot_longer(data=datResults2[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
+                        names_to="Measure", values_to="Value") %>% as.data.table()
+# - Graph results
+ggplot(datPlot[Threshold<=2500, ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2a") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+
+
+
+
+# --- 4a. Create a multithreaded setup for testing each threshold | Candidate Objective Function 2b
+
+# - Define objective function and associated argument list
+# M2's domain will typically be much larger than that of M1.
+# This implies that changes in M2 will affect f.obj1 much more than changes in M1,
+# which complicates the optimisation of f.obj1 with regard to M1
+# Therefore, define weights for each measure to downscale and upscale the influences of M2 and M1 respectively
+# These weights can be preset and left outside of the optimisation itself, just as a practical expedient for now
+w1 <- 1 # weight for M1 with its small domain
+w2 <- 0.05 # weight for M2 with its large domain, should logically be < w1
+# Best t_z given by maximising:
+objFunc <- function(vM1, vM2, w1=w1, w2=w2) {sum(w2*vM2 - w1*vM1, na.rm=T)/sd(w2*vM2 - w1*vM1, na.rm=T)}
+args <- c("vM2", "vM1", "w1", "w2")
+
+# - Setup & logging
+ptm <- proc.time() #IGNORE: for computation time calculation
+cl.port <- makeCluster(6); registerDoParallel(cl.port) # multi-threading setup
+cat("New Job: Applying TruEnd-procedure ..", file=paste0("assesslog_", caseStudy_Name,".txt"), append=F)
+
+# - Multithreaded for-loop
+datResults2b <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
+                      .packages='data.table', .export=c('TruEnd_outer', 'TruEnd_inner')) %dopar% {
+                        # - testing conditions
+                        # it <- 21
+                        
+                        datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
+                                                           matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
+                                                           controlVar=controlVar, controlVar2=controlVar2, tau=tau, matBalance=matBalance,
+                                                           vecMaturity=vecMaturity, it=it, numThres=numThres, minLength=minLength, 
+                                                           controlVar2VoidVal=controlVar2VoidVal, reportFlag=T, logName=caseStudy_Name,
+                                                           objFunc=objFunc, args=args, w1=w1, w2=w2)
+                      }
+stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
+
+# - Save to disk (zip) for quick disk-based retrieval later
+pack.ffdf(paste0(genObjPath,"Results_Candidate2b_", caseStudy_Name), datResults2b)
+
+# - Logging
+cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
+    file=paste0("assesslog_", caseStudy_Name,".txt"), append=T)
+
+
+# --- 4b. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
+
+# - Prepare results dataset
+datPlot <- pivot_longer(data=datResults2b[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
+                        names_to="Measure", values_to="Value") %>% as.data.table()
+# - Graph results
+ggplot(datPlot[Threshold<=2500, ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2b") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+datPlot[Measure=="Objective",]
+
+# - Graph only M1 and Objective function
+ggplot(datPlot[Threshold<=2500 & Measure != "M2_mean", ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2b") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+
+
+
+# --- 5a. Create a multithreaded setup for testing each threshold | Candidate Objective Function 2c
+
+# - Define objective function and associated argument list
+# M2's domain will typically be much larger than that of M1.
+# This implies that changes in M2 will affect f.obj1 much more than changes in M1,
+# which complicates the optimisation of f.obj1 with regard to M1
+# Therefore, define weights for each measure to downscale and upscale the influences of M2 and M1 respectively
+# These weights can be preset and left outside of the optimisation itself, just as a practical expedient for now
+w1 <- 1 # weight for M1 with its small domain
+w2 <- 0.05 # weight for M2 with its large domain, should logically be < w1
+# Best t_z given by maximising:
+objFunc <- function(vM1, vM2, w1=w1, w2=(vM1 / (vM1 + vM2))) {sum(w2*vM2 - w1*vM1, na.rm=T)/sd(w2*vM2 - w1*vM1, na.rm=T)}
+args <- c("vM2", "vM1", "w1")
+
+# - Setup & logging
+ptm <- proc.time() #IGNORE: for computation time calculation
+cl.port <- makeCluster(6); registerDoParallel(cl.port) # multi-threading setup
+cat("New Job: Applying TruEnd-procedure ..", file=paste0("assesslog_", caseStudy_Name,".txt"), append=F)
+
+# - Multithreaded for-loop
+datResults2c <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
+                        .packages='data.table', .export=c('TruEnd_outer', 'TruEnd_inner')) %dopar% {
+                          # - testing conditions
+                          # it <- 21
+                          
+                          datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
+                                                             matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
+                                                             controlVar=controlVar, controlVar2=controlVar2, tau=tau, matBalance=matBalance,
+                                                             vecMaturity=vecMaturity, it=it, numThres=numThres, minLength=minLength, 
+                                                             controlVar2VoidVal=controlVar2VoidVal, reportFlag=T, logName=caseStudy_Name,
+                                                             objFunc=objFunc, args=args, w1=w1)
+                        }
+stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
+
+# - Save to disk (zip) for quick disk-based retrieval later
+pack.ffdf(paste0(genObjPath,"Results_Candidate2c_", caseStudy_Name), datResults2c)
+
+# - Logging
+cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
+    file=paste0("assesslog_", caseStudy_Name,".txt"), append=T)
+
+
+# --- 4b. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
+
+# - Prepare results dataset
+datPlot <- pivot_longer(data=datResults2c[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
+                        names_to="Measure", values_to="Value") %>% as.data.table()
+# - Graph results
+ggplot(datPlot[Threshold<=2500, ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2c") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+datPlot[Measure=="Objective",]
+
+# - Graph only M1 and Objective function
+ggplot(datPlot[Threshold<=2500 & Measure != "M2_mean", ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2b") + 
+  geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
+
+
+
+
+# --- 6a. Create a multithreaded setup for testing each threshold | Candidate Objective Function 3
+
+# - Define objective function and associated argument list
+# Calculating the 'contamination' degree to which M1 is contaminated by M2
+# Best t_z given by maximising:
+objFunc <- function(vM1, vM2) {sum(vM1 / (vM1 + vM2), na.rm=T)}
+args <- c("vM2", "vM1")
+
+# - Setup & logging
+ptm <- proc.time() #IGNORE: for computation time calculation
+cl.port <- makeCluster(6); registerDoParallel(cl.port) # multi-threading setup
+cat("New Job: Applying TruEnd-procedure ..", file=paste0("assesslog_", caseStudy_Name,".txt"), append=F)
+
+# - Multithreaded for-loop
+datResults3 <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
+                       .packages='data.table', .export=c('TruEnd_outer', 'TruEnd_inner')) %dopar% {
+                         # - testing conditions
+                         # it <- 21
+                         
+                         datResults.interim <- TruEnd_outer(matControl=matControl, thres=vThres[it %% length(vThres) + (it %% length(vThres) == 0)*length(vThres)], 
+                                                            matControl2=matControl2, thres2 = vThres2[(floor((it-1) / length(vThres))+1)], 
+                                                            controlVar=controlVar, controlVar2=controlVar2, tau=tau, matBalance=matBalance,
+                                                            vecMaturity=vecMaturity, it=it, numThres=numThres, minLength=minLength, 
+                                                            controlVar2VoidVal=controlVar2VoidVal, reportFlag=T, logName=caseStudy_Name,
+                                                            objFunc=objFunc, args=args)
+                       }
+stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
+
+# - Save to disk (zip) for quick disk-based retrieval later
+pack.ffdf(paste0(genObjPath,"Results_Candidate3_", caseStudy_Name), datResults2)
 
 # - Logging
 cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
@@ -155,60 +391,25 @@ cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3]
 
 
 
-
-# --- 3a. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
+# --- 6b. Analytics: Main optimisation results: M1, M2, objective function across threshold b | Primary control variable only (B_t)
 
 # - Prepare results dataset
-datPlot <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
+datPlot <- pivot_longer(data=datResults3[Threshold2==0,list(Threshold, M1_mean, M2_mean, Objective)], cols=M1_mean:Objective, 
                         names_to="Measure", values_to="Value") %>% as.data.table()
+datPlot[Measure=="Objective",]
+
 # - Graph results
-ggplot(datPlot, aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
-  labs(y="Value", x=bquote("Threshold "*italic(b))) + 
+ggplot(datPlot[Threshold<=2500, ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 3") + 
   geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
-  geom_line(aes(colour=Measure, linetype=Measure), size=1)
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
 
-
-# --- 3b. Analytics: Account ages & length of isolated TZB-regime across threshold b | Primary control variable only (B_t)
-# - Prepare results dataset
-datPlot <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, FalseEnd_mean, TruEnd_mean, TZB_Length_mean)], 
-                        cols=FalseEnd_mean:TZB_Length_mean, names_to="Measure", values_to="Value") %>% as.data.table()
-datPlot[, Facet := ifelse(Measure=="TZB_Length_mean", "b. TZB-regime lengths", "a. Account ages")]
-
-# - Graph results
-ggplot(datPlot, aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
-  labs(y="Value", x=bquote("Threshold "*italic(b))) + 
-  theme(legend.position="bottom",
-        strip.background = element_rect(fill="snow2", colour="snow2"),
-        strip.text=element_text(size=8, colour="gray50"), strip.text.y.right=element_text(angle=90)) + 
+# - Graph only M1 and Objective function
+ggplot(datPlot[Threshold<=2500 & Measure != "M2_mean", ], aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
+  labs(y="Value", x=bquote("Threshold "*italic(b)), title="Candidate 2b") + 
   geom_point(aes(colour=Measure, shape=Measure), size=1.5) + 
-  geom_line(aes(colour=Measure, linetype=Measure), size=1) + 
-  facet_grid(Facet~., scales="free")
-
-
-# --- 3c. Analytics: Prevalence of TZB-regimes across threshold b | Primary control variable only (B_t)
-# - Graph results
-ggplot(datResults[Threshold2==0,], aes(x=Threshold, y=TZB_prevalence)) + theme_minimal() + 
-  labs(y="Portfolio-wide TZB-prevalence (%) amongst all accounts", x=bquote("Threshold "*italic(b))) + 
-  theme(legend.position="bottom") + 
-  geom_point(size=1.5) + geom_line(size=1) + 
-  scale_y_continuous(labels=percent)
-
-
-# --- 3d. Analytics: True ending balances across threshold b | Primary control variable only (B_t)
-# - Graph results
-ggplot(datResults[Threshold2==0,], aes(x=Threshold, y=TruBal_mean)) + theme_minimal() + 
-  labs(y="True ending balance (R)", x=bquote("Threshold "*italic(b))) + 
-  theme(legend.position="bottom") + 
-  geom_point(size=1.5) + geom_line(size=1) + 
-  scale_y_continuous(labels=comma)
-
-
-
-
-
-# Arno: try to think about the objective function. Want to show a bump somehow at b=250. 
-#   Maybe incorporate length of TZB as penalization? Or divide (M2- M1) by something?
+  geom_line(aes(colour=Measure, linetype=Measure), linewidth=1)
 
 
 # --- Cleanup
-rm(matBalance, matControl, datResults)
+rm(matBalance, matControl, matControl2, vecMaturity, datResults, datResults2, datResults2b, datResults2c, datResults3, datPlot, datGiven)
