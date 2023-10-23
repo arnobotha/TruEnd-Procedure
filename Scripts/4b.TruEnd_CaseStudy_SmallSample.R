@@ -300,4 +300,4 @@ ggplot(datResults[Threshold2==0,], aes(x=Threshold, y=TruBal_mean)) + theme_mini
 
 
 # --- Cleanup
-rm(matBalance, matControl, matControl2, vecMaturity, datResults, datPlot)
+rm(matBalance, matControl, matControl2, vecMaturity, datResults, datPlot, datGiven, datExp)
