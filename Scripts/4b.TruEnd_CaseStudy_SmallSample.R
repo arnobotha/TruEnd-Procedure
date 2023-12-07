@@ -124,7 +124,7 @@ vecMaturity <- datGiven[order(get(accVar)),list(Freq = max(get(timeVar),na.rm=T)
 
 
 
-# --- 2a. Create a multithreaded setup for testing each threshold | 
+# --- 2a. Create a multithreaded setup for testing each threshold
 # This section is run interactively across various candidate objective functions; see results-section for brief log
 
 # - Define objective function and associated argument list
@@ -142,7 +142,7 @@ objFunc <- function(vM1, vM2, w1=w1, w2=w2) {
   # - Candidate 1b
   #sum(w2*vM2 - w1*vM1, na.rm=T)  / sd(w2*vM2 - w1*vM1, na.rm=T)
   # - Candidate 1c
-  sum( ( (w2*vM2 - w1*vM1)  ) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )
+  sum( (w2*vM2 - w1*vM1) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )
   # - Candidate 2a
   #sum( ( (w2*vM2 - w1*vM1) - mean(w2*vM2 - w1*vM1, na.rm=T)  ) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )
   # - Candidates 3a-c
@@ -184,7 +184,8 @@ cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3]
 # - Plot main results for primary control variable (B_t)
 datPlot <- subset(datResults, Threshold2==0)
 ggplot(datPlot, aes(x=Threshold, y=Objective)) + theme_minimal() + 
-  labs(x=bquote("Threshold "*italic(b)), y=bquote("Objective function value "*italic(f(b))) ) +
+  labs(x=bquote("Threshold "*italic(b)), y=bquote("Objective function value "*italic(f(b))),
+       subtitle=substr(funcStr<-paste0(str_squish(deparse(body(objFunc))),collapse=""), start = 2, stop = str_length(funcStr))) +
   geom_point(size=1.5) + geom_line(linewidth=1)
 
 # - Get optima
@@ -200,7 +201,7 @@ cat("Minimum of f: ", comma(min(datPlot$Objective, na.rm=T)), " found at b=",
 #   Improves upon 1a by accounting for inherent variance in vectors within the objective function
 #   Achieves best maximisation result at b=300 (with w2=0.0007).
 #   The drawback is the need for specifying w2 at all
-# -- 1c: sum( ( (w2*vM2 - w1*vM1)  ) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )
+# -- 1c: sum( ( (w2*vM2 - w1*vM1)  ) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )  | CHOSEN CANDIDATE
 #   Exactly the same curve as 1b, but mathematically more tractable/defensible 
 # -- 2a: sum( ( (w2*vM2 - w1*vM1) - mean(w2*vM2 - w1*vM1, na.rm=T)  ) / sd(w2*vM2 - w1*vM1, na.rm=T), na.rm=T )
 #   Standardising [(X-mu)/sd] the vector within the objective function had a nasty effect, with the curve breaking down across all thresholds b
