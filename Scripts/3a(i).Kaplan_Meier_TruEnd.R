@@ -176,15 +176,15 @@ aggrSeries1_1 <- max(Combined_Ft_p1_1$Value, na.rm=T)
 (gsurv1c_Combined_Ft_1 <- ggplot(Combined_Ft_p1_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
-    annotate("text", x=12, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
+    annotate("text", x=15, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_1*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
   
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_Ft_1,newpage=F), file=paste0(genFigPath,"Ft_1_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
@@ -208,15 +208,15 @@ aggrSeries1_2 <- max(Combined_Ft_p1_2$Value, na.rm=T)
 (gsurv1c_Combined_Ft_2 <- ggplot(Combined_Ft_p1_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
-    annotate("text", x=72, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
+    annotate("text", x=75, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_2*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_Ft_2,newpage=F), file=paste0(genFigPath,"Ft_2_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
@@ -240,14 +240,14 @@ aggrSeries1_2 <- max(Combined_Ft_p1_3$Value, na.rm=T)
 (gsurv1c_Combined_Ft_3 <- ggplot(Combined_Ft_p1_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x="Default spell age (months)", y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
-    annotate("text", x=140, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
+    annotate("text", x=150, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_3*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
 
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_Ft_3,newpage=F), file=paste0(genFigPath,"Ft_3_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
@@ -276,15 +276,15 @@ aggrSeries2_1 <- max(Combined_ht_p2_1$Value, na.rm=T)
 (gsurv1c_Combined_ht_1 <- ggplot(Combined_ht_p2_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
-    annotate("text", x=50, y=aggrSeries2_1*0.1, size=3, family=chosenFont,
+    annotate("text", x=40, y=aggrSeries2_1*0.1, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_1*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_ht_1,newpage=F), file=paste0(genFigPath,"ht_1_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
@@ -308,16 +308,15 @@ aggrSeries2_1 <- max(Combined_ht_p2_2$Value, na.rm=T)
 (gsurv1c_Combined_ht_2 <- ggplot(Combined_ht_p2_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) +  
-    annotate("text", x=110, y=aggrSeries2_1*0.96, size=3, family=chosenFont,
+    annotate("text", x=105, y=aggrSeries2_1*0.96, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_2*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
-
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_ht_2,newpage=F), file=paste0(genFigPath,"ht_2_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
@@ -343,12 +342,12 @@ aggrSeries2_1 <- max(Combined_ht_p2_3$Value, na.rm=T)
     labs(x="Default spell age (months)", y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_3*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
 
-dpi <- 220
+dpi <- 260
 ggsave(print(gsurv1c_Combined_ht_3,newpage=F), file=paste0(genFigPath,"ht_3_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
