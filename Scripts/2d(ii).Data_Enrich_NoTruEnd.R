@@ -150,7 +150,7 @@ datCredit_real <- datCredit_real %>%
            HasSettle, EarlySettle_Ind, EarlySettle_Amt, HasFurtherLoan, FurtherLoan_Ind, FurtherLoan_Amt, 
            HasRedraw, Redraw_Ind, Redrawn_Amt, HasClosure, CLS_STAMP, .after=DefaultStatus1) %>%
   # Re-order and group together other fields
-  relocate(ExclusionID, TreatmentID, ZeroBal_Start, .after=CLS_STAMP)
+  relocate(ExclusionID, TreatmentID, .after=CLS_STAMP)
 
   
 

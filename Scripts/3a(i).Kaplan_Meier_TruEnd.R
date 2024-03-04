@@ -23,26 +23,17 @@
 # ---------------------------------------------------------------------------------------
 
 
-# ------ 0. Preliminaries
-ptm <- proc.time() # for runtime calculations (ignore)
-
-
-
-
-# ------ 1. Graphing setup
-windowsFonts("Cambria" = windowsFont("Cambria"))
-chosenFont <- "Cambria"
-trainGraphs <- "training_slc" # folder location
-portName <- "FNB SLC"
-
+# ------ 1. Preliminaries
 
 # - graphing parameters
+chosenFont <- "Cambria"
 vCol <- brewer.pal(10, "Paired")[c(10)]
 
 
 
 
-# ------ 2. Get the relevant data for testing TruEnd and NoTruEnd and sample accordingly
+# ------ 2. Get the relevant data for testing TruEnd and NoTruEnd
+
 # --- 2.1 TruENd 
 
 # Load data
@@ -71,10 +62,9 @@ rm(datCredit_real); gc()
 
 
 
-
-# ------ 3. Graphing default quantities
+# ------ 3. Calculate Kaplan-Meier estimator of survival probability
  
-# --- 3.1 TruEnd plots
+# --- 3.1 TruEnd
 
 # --- Compute Kaplan-Meier survival estimates (product-limit) for WOFF-event | Spell-level with right-censoring & left-truncation
 # Left-truncated spells will have TimeInDefSpell > 1 while the rest will have TimeInDefSpell = 1, both of
@@ -89,7 +79,8 @@ kmDef_woff_real_spell1c_TruEnd <- survfit(Surv(time=TimeInDefSpell-1, time2=DefS
 summary(kmDef_woff_real_spell1c_TruEnd)$table
 surv_summary(kmDef_woff_real_spell1c_TruEnd)
 
-# --- 3.2 NoTruEnd plots
+
+# --- 3.2 NoTruEnd
 
 # --- Compute Kaplan-Meier survival estimates (product-limit) for WOFF-event | Spell-level with right-censoring & left-truncation
 # Left-truncated spells will have TimeInDefSpell > 1 while the rest will have TimeInDefSpell = 1, both of
@@ -105,10 +96,12 @@ summary(kmDef_woff_real_spell1c_NoTruEnd)$table
 surv_summary(kmDef_woff_real_spell1c_NoTruEnd)
 
 
-# 4.1 TruEnd
 
-#Discrete baseline hazard function: h(t)
-# create plotting data object
+
+# ------ 4. Data preparation towards graphing survival quantities
+
+# --- 4.1 Data preparation: TruEnd
+# Includes alternative calculation methods by which the discrete baseline hazard h(t) is calculated
 haz_dat_TruEnd <- data.table(Time=kmDef_woff_real_spell1c_TruEnd$time, AtRisk_n=kmDef_woff_real_spell1c_TruEnd$n.risk, 
                              Event_n = kmDef_woff_real_spell1c_TruEnd$n.event, Censored_n=kmDef_woff_real_spell1c_TruEnd$n.censor,
                              hazard=kmDef_woff_real_spell1c_TruEnd$n.event/kmDef_woff_real_spell1c_TruEnd$n.risk, 
@@ -125,9 +118,9 @@ all.equal(haz_dat_TruEnd$hazard, haz_dat_TruEnd$hazard2) # Should be TRUE
 all.equal(haz_dat_TruEnd$Surv_KM, haz_dat_TruEnd$Surv_KM_Disc) # Should be TRUE
 all.equal(haz_dat_TruEnd$CumulHazard, haz_dat_TruEnd$CumulHazard_Disc)
 
-# 4.2 NoTruEnd
-# - Discrete baseline hazard function: h(t)
-# create plotting data object
+
+# --- 4.2 Data preparation: NoTruEnd
+# Includes alternative calculation methods by which the discrete baseline hazard h(t) is calculated
 haz_dat_NoTruEnd <- data.table(Time=kmDef_woff_real_spell1c_NoTruEnd$time, AtRisk_n=kmDef_woff_real_spell1c_NoTruEnd$n.risk, 
                                Event_n = kmDef_woff_real_spell1c_NoTruEnd$n.event, Censored_n=kmDef_woff_real_spell1c_NoTruEnd$n.censor,
                                hazard=kmDef_woff_real_spell1c_NoTruEnd$n.event/kmDef_woff_real_spell1c_NoTruEnd$n.risk, 
@@ -144,20 +137,27 @@ all.equal(haz_dat_NoTruEnd$hazard, haz_dat_NoTruEnd$hazard2) # Should be TRUE
 all.equal(haz_dat_NoTruEnd$Surv_KM, haz_dat_NoTruEnd$Surv_KM_Disc) # Should be TRUE
 all.equal(haz_dat_NoTruEnd$CumulHazard, haz_dat_NoTruEnd$CumulHazard_Disc)
 
+
+# --- 4.3 Data fusion
+
 # - Combining the datasets with and without the TruEnd into a single dataset
 Combined <- rbind(data.table(haz_dat_TruEnd, Dataset = "a_TruEnd"), data.table(haz_dat_NoTruEnd, Dataset = "b_NoTruEnd"))
 
-
-
-# --- Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
-
-# Aggregate to period-level (reporting date)
+# Aggregate to period-level (reporting date) | Survival probability
 plot.sample1 <- rbind(Combined[Dataset == "a_TruEnd",list(Time,Dataset,Value = 1-Surv_KM)],
                       Combined[Dataset == "b_NoTruEnd",list(Time,Dataset,Value = 1-Surv_KM)])
 
+# Aggregate to period-level (reporting date) | hazard rate
+plot.sample2 <- rbind(Combined[Dataset == "a_TruEnd",list(Time,Dataset,Value = hazard)],
+                      Combined[Dataset == "b_NoTruEnd",list(Time,Dataset,Value = hazard)])
 
 
-# -- TIME 1 between 0 and 60 months
+
+
+
+# ------ 5. Graph: Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+
+# --- 5.1 Time span [0,60] months
 Combined_Ft_p1_1 <- plot.sample1[Time<=60,]
 
 # - Calculate aggregated MAEs
@@ -172,7 +172,6 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(Combined_Ft_p1_1$Value, na.rm=T)
 
-
 # - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_1 <- ggplot(Combined_Ft_p1_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
@@ -184,14 +183,13 @@ aggrSeries1_1 <- max(Combined_Ft_p1_1$Value, na.rm=T)
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
-
   
 dpi <- 220
 ggsave(print(gsurv1c_Combined_Ft_1,newpage=F), file=paste0(genFigPath,"Ft_1_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
 
-# -- TIME 2 between 60 and 120 months
+# --- 5.2 Time span (60,120] months
 Combined_Ft_p1_2 <- plot.sample1[Time >= 61 & Time <= 120,]
 
 # - Calculate aggregated MAEs
@@ -206,7 +204,6 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(Combined_Ft_p1_2$Value, na.rm=T)
 
-
 # - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_2 <- ggplot(Combined_Ft_p1_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
@@ -219,21 +216,48 @@ aggrSeries1_2 <- max(Combined_Ft_p1_2$Value, na.rm=T)
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
-
 dpi <- 220
 ggsave(print(gsurv1c_Combined_Ft_2,newpage=F), file=paste0(genFigPath,"Ft_2_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
 
+# --- 5.3 Time span (121,240] months
+Combined_Ft_p1_3 <- plot.sample1[Time >= 121 & Time <= 240,]
+
+# - Calculate aggregated MAEs
+AEs1_3 <- Combined_Ft_p1_3[,list(AE = abs(diff(Value))), by=list(Time)]
+(MAE1_3 <- mean(AEs1_3$AE, na.rm=T))
+
+# - Graphing parameters
+chosenFont <- "Cambria"
+vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
+vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+linetype.v <- c("solid", "dashed")
+aggrSeries1_2 <- max(Combined_Ft_p1_3$Value, na.rm=T)
+
+# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+(gsurv1c_Combined_Ft_3 <- ggplot(Combined_Ft_p1_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
+    theme_bw() + 
+    labs(x="Default spell age (months)", y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
+    annotate("text", x=140, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
+             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_3*100), "%'"), parse=T) + 
+    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
+    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
+    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
+    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
+
+dpi <- 220
+ggsave(print(gsurv1c_Combined_Ft_3,newpage=F), file=paste0(genFigPath,"Ft_3_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
-# --- Hazard functions
 
-# Aggregate to period-level (reporting date)
-plot.sample2 <- rbind(Combined[Dataset == "a_TruEnd",list(Time,Dataset,Value = hazard)],
-                      Combined[Dataset == "b_NoTruEnd",list(Time,Dataset,Value = hazard)])
 
-# -- TIME 1 between 0 and 60 months
+
+# ------ 6. Graph: Empirical hazard functions
+
+
+# --- 6.1 Time span [0,60] months
 Combined_ht_p2_1 <- plot.sample2[Time<=60,]
 
 # - Calculate aggregated MAEs
@@ -248,7 +272,7 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_1$Value, na.rm=T)
 
-#Hazard rate
+# Hazard rate
 (gsurv1c_Combined_ht_1 <- ggplot(Combined_ht_p2_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
@@ -260,13 +284,12 @@ aggrSeries2_1 <- max(Combined_ht_p2_1$Value, na.rm=T)
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel) +
     scale_y_continuous(labels = percent))
 
-
 dpi <- 220
 ggsave(print(gsurv1c_Combined_ht_1,newpage=F), file=paste0(genFigPath,"ht_1_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 
 
-# -- TIME 2 between 61 and 120 months
+# --- 6.2 Time span (60,120] months
 Combined_ht_p2_2 <- plot.sample2[Time >= 61 & Time <= 120,]
 
 # - Calculate aggregated MAEs
@@ -281,8 +304,7 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_2$Value, na.rm=T)
 
-
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# Hazard rate
 (gsurv1c_Combined_ht_2 <- ggplot(Combined_ht_p2_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) +  
@@ -300,56 +322,7 @@ ggsave(print(gsurv1c_Combined_ht_2,newpage=F), file=paste0(genFigPath,"ht_2_MAE.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# -- TIME 3 between 121 and 240 months
-Combined_Ft_p1_3 <- plot.sample1[Time >= 121 & Time <= 240,]
-
-# - Calculate aggregated MAEs
-AEs1_3 <- Combined_Ft_p1_3[,list(AE = abs(diff(Value))), by=list(Time)]
-(MAE1_3 <- mean(AEs1_3$AE, na.rm=T))
-
-# - Graphing parameters
-chosenFont <- "Cambria"
-vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
-linetype.v <- c("solid", "dashed")
-aggrSeries1_2 <- max(Combined_Ft_p1_3$Value, na.rm=T)
-
-
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
-(gsurv1c_Combined_Ft_3 <- ggplot(Combined_Ft_p1_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
-    theme_bw() + 
-    labs(x="Default spell age (months)", y="Cumulative incidence funciton [WOFF] ~ KM estimates") + 
-    annotate("text", x=140, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE1_3*100), "%'"), parse=T) + 
-    theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
-    scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
-    scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
-    scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
-
-
-dpi <- 180
-ggsave(print(gsurv1c_Combined_Ft_3,newpage=F), file=paste0(genFigPath,"Ft_3_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
-
-
-
-# -- TIME 3 between 121 and 240 months
+# --- 6.3 Time span (120,240] months
 Combined_ht_p2_3 <- plot.sample2[Time >= 121 & Time <= 240,]
 
 # - Calculate aggregated MAEs
@@ -364,11 +337,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(Combined_ht_p2_3$Value, na.rm=T)
 
-
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# Hazard rate
 (gsurv1c_Combined_ht_3 <- ggplot(Combined_ht_p2_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x="Default spell age (months)", y="Cumulative incidence funciton [WOFF] ~ KM estimates") + 
+    labs(x="Default spell age (months)", y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE2_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom", axis.text.x=element_text(angle=90)) + 
@@ -376,8 +348,7 @@ aggrSeries2_1 <- max(Combined_ht_p2_3$Value, na.rm=T)
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
     scale_linetype_manual(name="Dataset", values=linetype.v, labels=vLabel))
 
-
-dpi <- 180
+dpi <- 220
 ggsave(print(gsurv1c_Combined_ht_3,newpage=F), file=paste0(genFigPath,"ht_3_MAE.png"),width=1200/dpi, height=1000/dpi,dpi=dpi)
 
 

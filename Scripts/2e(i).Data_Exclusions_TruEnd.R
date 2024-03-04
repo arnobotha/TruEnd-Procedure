@@ -80,7 +80,7 @@ pack.ffdf(paste0(genObjPath,"Exclusions-TruEnd-Enriched"), datExclusions);
 
 # - Check the impact of the exclusions from script 2d | RECORD-LEVEL
 (exclusions_credit <- datCredit_real[ExclusionID != 0, .N] / datCredit_real[, .N] * 100)
-# Exclusions' impact: 6.05%
+# Exclusions' impact: 5.92%
 
 # - Now apply the exclusions
 datCredit_real <- subset(datCredit_real, ExclusionID == 0); gc()

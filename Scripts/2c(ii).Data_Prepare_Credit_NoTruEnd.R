@@ -47,6 +47,7 @@ ptm3 <- proc.time() # for runtime calculations (ignore)
 
 # - Confirm raw data is loaded into memory
 if (!exists('datCredit_real')) unpack.ffdf(paste0(genPath,"creditdata_final1c"), tempPath)
+if (!exists('datExclusions')) unpack.ffdf(paste0(genObjPath,"Exclusions-Preliminary"), tempPath)
 
 
 # --- 6. Advanced Data Treatment 6: Treating varying [Term]-values | See Data Experiment 5

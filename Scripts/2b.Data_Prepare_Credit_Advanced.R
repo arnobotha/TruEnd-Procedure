@@ -368,10 +368,13 @@ if (diag.real7e > 0 | diag.real7f_a != diag.real7f_b) {
 }
 
 # - Cleanup
-rm(treat_samp1, treat_samp2)
+rm(treat_samp1, treat_samp2, LoanIDs, datExcl)
 
 # - Save to disk (zip) for quick disk-based retrieval later
 pack.ffdf(paste0(genPath,"creditdata_final1c"), datCredit_real)
+
+# - Store experimental objects | Memory optimisation
+pack.ffdf(paste0(genObjPath,"Exclusions-Preliminary"), datExclusions);
 
 # - Logging
 cat('Data prepared (Advanced). Pending application (or not) of the TruEnd-procedure next ..\n')
