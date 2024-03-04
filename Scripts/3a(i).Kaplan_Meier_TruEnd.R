@@ -353,6 +353,13 @@ ggsave(print(gsurv1c_Combined_ht_3,newpage=F), file=paste0(genFigPath,"ht_3_MAE.
 
 
 
+# ------ 7. General cleanup
+rm(AEs1_1, AEs1_2, AEs1_3, AEs2_1, AEs2_2, AEs2_3, Combined, Combined_Ft_p1_1, Combined_Ft_p1_2, Combined_Ft_p1_3,
+   Combined_ht_p2_1, Combined_ht_p2_2, Combined_ht_p2_3, datSurv_NoTruEnd, datSurv_TruEnd, 
+   gsurv1c_Combined_Ft_1, gsurv1c_Combined_Ft_2, gsurv1c_Combined_Ft_3, gsurv1c_Combined_ht_1, gsurv1c_Combined_ht_2, gsurv1c_Combined_ht_3,
+   haz_dat_TruEnd, haz_dat_NoTruEnd, plot.sample1, plot.sample2, vLabel, kmDef_woff_real_spell1c_TruEnd, kmDef_woff_real_spell1c_NoTruEnd)
+gc()
+
 
 
 
