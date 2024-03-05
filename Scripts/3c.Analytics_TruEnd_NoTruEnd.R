@@ -104,8 +104,6 @@ datCredit_TruEnd[DefSpellResol_Type_Hist == "Cured", .N] / datCredit_TruEnd[,.N]
 datCredit_TruEnd[DefSpellResol_Type_Hist == "Cured" & LossRate_Real != 0, .N] / datCredit_TruEnd[,.N] # 0
 ### SAFE
 
-
-
 # - In case these two fields are necessary
 lookup[, ReceiptPV := sum(Receipt_Inf * (1+InterestRate_Nom/12)^(-1*TimeInDefSpell)), by=list(LoanID)]
 lookup[DefSpell_Age > 1, LossRate_Real2 := (Balance[1] - ReceiptPV[1]) / Balance[1], by=list(LoanID)]
@@ -292,9 +290,9 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
     labs(x=bquote({Realised~loss~rate~italic(L)}), 
          y="Histogram and density of resolved defaults [write-offs]") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
-    scale_color_manual(name="Datatset", labels=labels.v, values=vCol) + 
-    scale_fill_manual(name="Datatset", labels=labels.v, values=vCol) + 
-    scale_linetype_discrete(name="Datatset", labels=labels.v) + 
+    scale_color_manual(name="Dataset", labels=labels.v, values=vCol) + 
+    scale_fill_manual(name="Dataset", labels=labels.v, values=vCol) + 
+    scale_linetype_discrete(name="Dataset", labels=labels.v) + 
     scale_x_continuous(breaks=pretty_breaks(), label=percent)
 )
 
@@ -480,9 +478,9 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
     # facets & scale options
     labs(x="Account Age (months)", y="Histogram and density of account lifetimes") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
-    scale_color_manual(name="Datatset", labels=labels.v, values=vCol) + 
-    scale_fill_manual(name="Datatset", labels=labels.v, values=vCol) + 
-    scale_linetype_discrete(name="Datatset", labels=labels.v) + 
+    scale_color_manual(name="Dataset", labels=labels.v, values=vCol) + 
+    scale_fill_manual(name="Dataset", labels=labels.v, values=vCol) + 
+    scale_linetype_discrete(name="Dataset", labels=labels.v) + 
     scale_x_continuous(breaks=pretty_breaks(), label=comma)
 )
 
@@ -492,21 +490,11 @@ ggsave(g1, file=paste0(genFigPath,"/AccountAge-Densities.png"),width=1200/dpi, h
 
 
 
+
+
 # ------ 3. Analysis: Account-level summaries: TruEnd vs NoTruEnd
+# Just a quick investigation
 
-
-# - graphing parameters
-vCol <- brewer.pal(8, "Dark2")[c(1,2)]
-labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
-
-(g1 <- ggplot(datPlot[LoanAge <=500,], aes(x=LoanAge, group=Dataset)) + theme_bw() +
-  geom_histogram(aes(y=after_stat(density), colour=Dataset, fill=Dataset), alpha=0.4, #bins=round(2*datCredit_NoTruEnd_W[,.N]^(1/3)), 
-                 position="identity")
-)
-
-
-
-### SCRATCH for planning analytics
 # - General
 describe(datCreditAggr_TruEnd$LoanAge); hist(datCreditAggr_TruEnd$LoanAge, breaks="FD") # Mean: 97.9
 describe(datCreditAggr_NoTruEnd$LoanAge); hist(datCreditAggr_NoTruEnd$LoanAge, breaks="FD") # Mean: 100.9
@@ -515,19 +503,12 @@ describe(datCreditAggr_TruEnd$DefSpells_Num); hist(datCreditAggr_TruEnd$DefSpell
 describe(datCreditAggr_TruEnd$Event_Type)
 describe(datCreditAggr_TruEnd[DefSpells_Num>0 & Event_Type != "ACTIVE", WOff]) # Should represent ~ 19% write-off resolution of defaults
 describe(datCreditAggr_TruEnd[Event_Type == "WOFF", LossRate]) # Should represent ~ 19% write-off resolution of defaults
-### AB: re-perform this and build in 1-2 sanity checks to ensure aggregation is correct at top of script
 
 # - Loan Age
 describe(datCreditAggr_TruEnd[DefSpells_Num>0, LoanAge]) # Mean loan age (defaults): 165.5
 describe(datCreditAggr_TruEnd[DefSpells_Num>0 & WOff==1, LoanAge]) # Mean loan age (write-offs): 92
 hist(datCreditAggr_TruEnd[DefSpells_Num>0 & WOff==1, LoanAge], breaks="FD")
 
-
-describe(datCreditAggr_NoTruEnd$LoanAge); hist(datCreditAggr_NoTruEnd$LoanAge, breaks="FD")
-
-# --- 1. <Specific analytics>
-
-### AB: Flesh out necessary graphs
 
 
 
