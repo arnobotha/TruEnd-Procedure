@@ -425,7 +425,7 @@ ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TZB-prevalence.
 # - Prepare results dataset
 datPlot <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, FalseEnd_mean, TruEnd_mean, TZB_Length_mean)], 
                         cols=FalseEnd_mean:TZB_Length_mean, names_to="Measure", values_to="Value") %>% as.data.table()
-datPlot[, Facet := ifelse(Measure=="TZB_Length_mean", "2.  TZB-regimes only", "1.  Account lifespans")]
+datPlot[, Facet := ifelse(Measure=="TZB_Length_mean", "2.  TZB-periods only", "1.  Account lifespans")]
 
 # - Enrich graphing dataset with standard deviation estimates
 datEnrich <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, TruEnd_sd, TZB_Length_sd)], 
@@ -452,8 +452,8 @@ datAnnotate[, y_Label := case_when(Measure=="TruEnd_mean"~Value*1.005,
 
 # - graphing parameters
 vCol <- brewer.pal(8, "Dark2")[c(2,1,3)]; vCol2 <- brewer.pal(8, "Set2")[c(1,3,2)]
-vLabel <- c("FalseEnd_mean"="Age (No TruEnd)", "TruEnd_mean"="Age (TruEnd)", "TZB_Length_mean" = "Length of TZB-regime")
-vLabel2 <- c("TruEnd_mean"="Age (TruEnd)", "TZB_Length_mean" = "Length of TZB-regime")
+vLabel <- c("FalseEnd_mean"="Age (No TruEnd)", "TruEnd_mean"="Age (TruEnd)", "TZB_Length_mean" = "Length of TZB-period")
+vLabel2 <- c("TruEnd_mean"="Age (TruEnd)", "TZB_Length_mean" = "Length of TZB-period")
 
 # - Graph results
 (g3 <- ggplot(datPlot, aes(x=Threshold, y=Value, group=Measure)) + theme_minimal() + 
