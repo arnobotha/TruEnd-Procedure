@@ -86,32 +86,6 @@ rm(datCredit_real); gc()
 (diag.oob.lossrate_TruEnd <- datCredit_TruEnd[LossRate_Real < 0 | LossRate_Real > 1, .N] / datCredit_TruEnd[DefSpellResol_Type_Hist  == "WOFF",.N] * 100)
 datCredit_TruEnd[, OOB_Ind := ifelse(LossRate_Real < 0 | LossRate_Real > 1, 1,0)]
 
-
-
-### AB: SCRATCH-START
-
-# - Distributional analysis on negative loss rates
-describe(datCredit_TruEnd[LossRate_Real<0, LossRate_Real])
-### RESULTS: left-skewed distribution, mean of -204.4% and median of -21.1%. Very large negative outliers, up to -129,611%
-hist(datCredit_TruEnd[LossRate_Real<0 & LossRate_Real> -50, LossRate_Real], breaks="FD")
-
-# - Distributional analysis on >100% loss rates
-describe(datCredit_TruEnd[LossRate_Real>1, LossRate_Real])
-### SAFE: no such cases
-
-# - cures with non-zero loss rates?
-datCredit_TruEnd[DefSpellResol_Type_Hist == "Cured", .N] / datCredit_TruEnd[,.N] # 77% cures
-datCredit_TruEnd[DefSpellResol_Type_Hist == "Cured" & LossRate_Real != 0, .N] / datCredit_TruEnd[,.N] # 0
-### SAFE
-
-# - In case these two fields are necessary
-lookup[, ReceiptPV := sum(Receipt_Inf * (1+InterestRate_Nom/12)^(-1*TimeInDefSpell)), by=list(LoanID)]
-lookup[DefSpell_Age > 1, LossRate_Real2 := (Balance[1] - ReceiptPV[1]) / Balance[1], by=list(LoanID)]
-
-### AB: SCRATCH-END
-
-
-
 # - Filter out OOB-cases, purely for graphing purposes
 datCredit_TruEnd_NOOB <- subset(datCredit_TruEnd, OOB_Ind == 0)
 
