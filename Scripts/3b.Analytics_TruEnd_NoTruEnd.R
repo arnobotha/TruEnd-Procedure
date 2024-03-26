@@ -1,5 +1,5 @@
 # ================================== TruEnd-procedure ===================================
-# Compare resultsets of TruEnd vs No-TruEnd via realised loss rate distributions
+# Compare result sets of TruEnd vs No-TruEnd via realised loss rate distributions
 # ---------------------------------------------------------------------------------------
 # PROJECT TITLE: TruEnd-procedure
 # SCRIPT AUTHOR(S): Dr Arno Botha
@@ -103,7 +103,9 @@ vCol <- brewer.pal(10, "Paired")[c(8,6)]
 
 # - Aesthetic engineering: Statistical Summaries
 meanLoss_TruEnd <- mean(datCredit_TruEnd_NOOB$LossRate_Real, na.rm=T)
+maxDensLoss_TruEnd <- max(density(datCredit_TruEnd_NOOB$LossRate_Real)$y)
 MeanLoss_TruEnd_W <- mean(datCredit_TruEnd_W$LossRate_Real, na.rm=T)
+maxDensLoss_TruEnd_W <- max(density(datCredit_TruEnd_W$LossRate_Real)$y)
 mix_WC_TruEnd <- datCredit_TruEnd_W[, .N] / datCredit_TruEnd_NOOB[, .N] # overall write-off probability given default of 18%
 
 # - main graphs a) Overall LGD distribution
@@ -182,7 +184,9 @@ vCol <- brewer.pal(10, "Paired")[c(8,6)]
 
 # - Aesthetic engineering: Statistical Summaries
 meanLoss_NoTruEnd <- mean(datCredit_NoTruEnd_NOOB$LossRate_Real, na.rm=T)
+maxDensLoss_NoTruEnd <- max(density(datCredit_NoTruEnd_NOOB$LossRate_Real)$y)
 MeanLoss_NoTruEnd_W <- mean(datCredit_NoTruEnd_W$LossRate_Real, na.rm=T)
+maxDensLoss_NoTruEnd_W <- max(density(datCredit_NoTruEnd_W$LossRate_Real)$y)
 mix_WC_NoTruEnd <- datCredit_NoTruEnd_W[, .N] / datCredit_NoTruEnd_NOOB[, .N]
 
 # - main graphs a) Overall LGD distribution
@@ -247,7 +251,11 @@ datPlot <- rbind(data.table(datCredit_TruEnd_W, Dataset="a_TruEnd"),
 datAnnotate <- data.table(MeanLoss=c(MeanLoss_TruEnd_W,MeanLoss_NoTruEnd_W), Dataset=c("a_TruEnd","b_NoTruEnd"), 
                           Label=c(paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_TruEnd_W*100), "%; TruEnd"),
                                   paste0("Mean Loss: ", sprintf("%.1f", MeanLoss_NoTruEnd_W*100), "%; No TruEnd")),
-                          Label_x=c(MeanLoss_TruEnd_W*0.9,MeanLoss_NoTruEnd_W*1.1), Label_y=c(2,2))
+                          Label_x=c(0.7,0.7), 
+                          Label_y=c(maxDensLoss_TruEnd_W*1.4, maxDensLoss_NoTruEnd_W*1.2))
+
+# - scenario for facetting
+datPlot[, Scenario := "Write-offs only"]
 
 # - graphing parameters
 vCol <- brewer.pal(8, "Dark2")[c(1,2)]
@@ -256,14 +264,18 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 # - main graphs a) Overall LGD distribution
 (g1 <- ggplot(datPlot, aes(x=LossRate_Real, group=Dataset)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density), colour=Dataset, fill=Dataset), alpha=0.3, #bins=round(2*datCredit_NoTruEnd_W[,.N]^(1/3)), 
-                   position="identity") + 
-    geom_density(aes(colour=Dataset, linetype=Dataset), linewidth=0.5) + 
+                   position="identity", linewidth=0.3) + 
+    geom_density(aes(colour=Dataset, linetype=Dataset), linewidth=0.3) + 
     geom_vline(data=datAnnotate, aes(xintercept=MeanLoss, colour=Dataset, linetype=Dataset), linewidth=0.6) + 
-    geom_text(data=datAnnotate, aes(x=Label_x, y=Label_y, label=Label, colour=Dataset), angle=90, size=3, family=chosenFont) + 
+    geom_label(data=datAnnotate, aes(x=Label_x, y=Label_y, label=Label, colour=Dataset), size=3, family=chosenFont, show.legend=F) + 
     # facets & scale options
+    facet_grid(Scenario ~., scales="free") +  
     labs(x=bquote({Realised~loss~rate~italic(L)}), 
-         y="Histogram and density of resolved defaults [write-offs]") + 
-    theme(text=element_text(family=chosenFont),legend.position="bottom") + 
+         y="Histogram and density of resolved defaults") + 
+    theme(text=element_text(family=chosenFont),legend.position="bottom",
+          strip.background=element_rect(fill="snow2", colour="snow2"),
+          strip.text = element_text(size=8, colour="gray50"), 
+          strip.text.y.right = element_text(angle=90)) + 
     scale_color_manual(name="Dataset", labels=labels.v, values=vCol) + 
     scale_fill_manual(name="Dataset", labels=labels.v, values=vCol) + 
     scale_linetype_discrete(name="Dataset", labels=labels.v) + 
@@ -271,10 +283,8 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 )
 
 # - save plot
-dpi <- 200
+dpi <- 260
 ggsave(g1, file=paste0(genFigPath,"/LGD-Densities_WriteOffs.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
-
-
 
 
 
@@ -435,8 +445,8 @@ datPlot <- rbind(data.table(datCreditAggr_TruEnd[, list(LoanID, LoanAge)], Datas
 datAnnotate <- data.table(MeanAge=c(meanAge_TruEnd, meanAge_NoTruEnd), Dataset=c("a_TruEnd","b_NoTruEnd"), 
                           Label=c(paste0("Mean age: ", sprintf("%.1f", meanAge_TruEnd), " months; TruEnd"),
                                   paste0("Mean age: ", sprintf("%.1f", meanAge_NoTruEnd), " months; No TruEnd")),
-                          Label_x=c(meanAge_TruEnd*0.9,meanAge_NoTruEnd*1.1), 
-                          Label_y=c(maxDensAge_TruEnd*0.8,maxDensAge_NoTruEnd*0.8))
+                          Label_x=c(300,300), 
+                          Label_y=c(maxDensAge_TruEnd*0.6,maxDensAge_NoTruEnd*0.5))
 
 # - graphing parameters
 vCol <- brewer.pal(8, "Dark2")[c(1,2)]; xLimit <- 500
@@ -445,10 +455,10 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 # - main graphs a) Overall LGD distribution
 (g1 <- ggplot(datPlot[LoanAge <= xLimit, ], aes(x=LoanAge, group=Dataset)) + theme_bw() +
     geom_histogram(aes(y=after_stat(density), colour=Dataset, fill=Dataset), alpha=0.3, #bins=round(2*datCredit_NoTruEnd_W[,.N]^(1/3)), 
-                   position="identity") + 
-    geom_density(aes(colour=Dataset, linetype=Dataset), linewidth=0.5) + 
+                   position="identity", linewidth=0.3) + 
+    geom_density(aes(colour=Dataset, linetype=Dataset), linewidth=0.3) + 
     geom_vline(data=datAnnotate, aes(xintercept=MeanAge, colour=Dataset, linetype=Dataset), linewidth=0.6) + 
-    geom_text(data=datAnnotate, aes(x=Label_x, y=Label_y, label=Label, colour=Dataset), angle=90, size=3, family=chosenFont) + 
+    geom_label(data=datAnnotate, aes(x=Label_x, y=Label_y, label=Label, colour=Dataset), size=3, family=chosenFont, show.legend=F) + 
     # facets & scale options
     labs(x="Account Age (months)", y="Histogram and density of account lifetimes") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
@@ -459,7 +469,7 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 )
 
 # - save plot
-dpi <- 200
+dpi <- 260
 ggsave(g1, file=paste0(genFigPath,"/AccountAge-Densities.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
