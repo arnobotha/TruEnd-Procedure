@@ -117,8 +117,8 @@ mix_WC_TruEnd <- datCredit_TruEnd_W[, .N] / datCredit_TruEnd_NOOB[, .N] # overal
     annotate(geom="text", x=meanLoss_TruEnd*0.8, y=20, family=chosenFont,
              label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_TruEnd*100), "%"), size=3, colour=vCol[1], angle=90) +     
     # facets & scale options
-    labs(x=bquote({Realised~loss~rate~italic(L)}), 
-         y="Histogram and density of resolved defaults [cures/write-offs]") + 
+    labs(x=bquote({Realised~loss~rate~italic(l)}), 
+         y="Histogram and density of losses for resolved defaults [cures/write-offs]") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom",
           strip.background=element_rect(fill="snow2", colour="snow2"),
           strip.text = element_text(size=8, colour="gray50"), 
@@ -198,8 +198,8 @@ mix_WC_NoTruEnd <- datCredit_NoTruEnd_W[, .N] / datCredit_NoTruEnd_NOOB[, .N]
     annotate(geom="text", x=meanLoss_NoTruEnd*0.8, y=20, family=chosenFont,
              label = paste0("Mean Loss: ", sprintf("%.1f", meanLoss_NoTruEnd*100), "%"), size=3, colour=vCol[1], angle=90) +     
     # facets & scale options
-    labs(x=bquote({Realised~loss~rate~italic(L)}), 
-         y="Histogram and density of resolved defaults [cures/write-offs]") + 
+    labs(x=bquote({Realised~loss~rate~italic(l)}), 
+         y="Histogram and density of losses for resolved defaults [cures/write-offs]") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom",
           strip.background=element_rect(fill="snow2", colour="snow2"),
           strip.text = element_text(size=8, colour="gray50"), 
@@ -270,8 +270,8 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
     geom_label(data=datAnnotate, aes(x=Label_x, y=Label_y, label=Label, colour=Dataset), size=3, family=chosenFont, show.legend=F) + 
     # facets & scale options
     facet_grid(Scenario ~., scales="free") +  
-    labs(x=bquote({Realised~loss~rate~italic(L)}), 
-         y="Histogram and density of resolved defaults") + 
+    labs(x=bquote({Realised~loss~rate~italic(l)}), 
+         y="Histogram and density of losses") + 
     theme(text=element_text(family=chosenFont),legend.position="bottom",
           strip.background=element_rect(fill="snow2", colour="snow2"),
           strip.text = element_text(size=8, colour="gray50"), 
@@ -286,6 +286,63 @@ labels.v <- c("a_TruEnd"="TruEnd", "b_NoTruEnd"="No TruEnd")
 dpi <- 260
 ggsave(g1, file=paste0(genFigPath,"/LGD-Densities_WriteOffs.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
+# - Analyse impact of TruEnd regarding monetary value of resolved defaulted population (cures/write-offs)
+describe(datCredit_NoTruEnd_NOOB$Balance); hist(datCredit_NoTruEnd_NOOB$Balance, breaks="FD"); comma(sum(datCredit_NoTruEnd_NOOB$Balance))
+describe(datCredit_TruEnd_NOOB$Balance); hist(datCredit_TruEnd_NOOB$Balance, breaks="FD"); comma(sum(datCredit_TruEnd_NOOB$Balance))
+### RESULTS: TruEnd-dataset has fewer defaults than NoTruEnd-dataset, but higher mean (and total) EAD; not immediately obvious why
+
+# - Analyse impact of TruEnd regarding monetary value of written-off population
+describe(datCredit_NoTruEnd_W$LossRate_Real)
+describe(datCredit_TruEnd_W$LossRate_Real)
+describe(datCredit_NoTruEnd_W$Balance); hist(datCredit_NoTruEnd_W$Balance, breaks="FD"); comma(sum(datCredit_NoTruEnd_W$Balance))
+describe(datCredit_TruEnd_W$Balance); hist(datCredit_TruEnd_W$Balance, breaks="FD"); comma(sum(datCredit_TruEnd_W$Balance))
+### RESULTS: TruEnd-dataset has fewer write-offs than NoTruEnd-dataset, but higher mean (and total) EAD; not immediately obvious why
+
+# - Find common write-offs between both sets for fair analysis
+loanIDs <- intersect(datCredit_NoTruEnd_W$LoanID, datCredit_TruEnd_W$LoanID)
+# [DIAGNOSTIC] Degree of commonality between sets
+diag.real.an_1a <- NROW(loanIDs) / max(NROW(datCredit_NoTruEnd_W), NROW(datCredit_TruEnd_W))
+cat("NOTE: Degree of commonality between raw dataset (", comma(NROW(datCredit_NoTruEnd_W)),
+    ") and TruEnd-treated dataset (", comma(NROW(datCredit_TruEnd_W)),
+    ") is ", percent(diag.real.an_1a, accuracy=0.1), ".\n")
+### RESULTS: Very high commanality (98%)
+# [DIAGNOSTIC] Degree of inequality in EADs between sets
+datCompare <- merge(datCredit_NoTruEnd_W[,list(LoanID, DefSpell_Key, Balance, LossRate_Real)], 
+                    datCredit_TruEnd_W[,list(LoanID, DefSpell_Key, Balance, LossRate_Real)], by=c("LoanID", "DefSpell_Key"))
+diag.real.an_1b <- datCompare[Balance.x != Balance.y, .N] / datCompare[, .N]
+cat( (diag.real.an_1b == 0) %?% 
+  "SAFE: EADs between raw dataset and TruEnd-treated dataset are equal for common write-offs.\n" %:%
+  paste0("ERROR: EADs between raw dataset and TruEnd-treated dataset are not equal for common write-offs, with", percent(diag.real.an_1),
+         " difference.\n"))
+datCompare[, list(EAD_sum_NoTruEnd = comma(sum(Balance.x)), EAD_sum_TruEnd = comma(sum(Balance.x)))]
+
+# - Find set difference of written-off population between both sets
+loanIDs_diffs <- setdiff(datCredit_NoTruEnd_W$LoanID, datCredit_TruEnd_W$LoanID)
+# [DIAGNOSTIC] Degree of difference between sets
+diag.real.an_1c <- NROW(loanIDs_diffs) / NROW(datCredit_NoTruEnd_W)
+cat("NOTE: Degree of difference between raw dataset (", comma(NROW(datCredit_NoTruEnd_W)),
+    ") and the set difference (",comma(NROW(loanIDs_diffs)),") with the TruEnd-treated dataset (", comma(NROW(datCredit_TruEnd_W)),
+    ") is ", percent(diag.real.an_1c, accuracy=0.1), ".\n")
+describe(datCredit_NoTruEnd_W[LoanID %in% loanIDs_diffs, Balance])
+# [DIAGNOSTIC] Proportion of balances <= than optimal policy from TruEnd-procedure
+diag.real.an_1d <- datCredit_NoTruEnd_W[LoanID %in% loanIDs_diffs & Balance <= currThresh, .N] /
+  datCredit_NoTruEnd_W[LoanID %in% loanIDs_diffs, .N]
+cat("NOTE: Within the previous set difference, the proportion of balances <= than the optimal policy b^*=",
+    comma(currThresh), " is ", percent(diag.real.an_1d, accuracy=0.1), ".\n")
+### RESULTS: Balances appears very small, which are however confirmed to be <= the b^*policy used in the TruEnd-procedure
+# Therefore, the set difference universally consists of small-balance defaults, thereby explaining their exclusion in the
+# TruEnd-treated dataset.
+
+
+# - Analyse impact of TruEnd regarding monetary value of written-off population
+# Use the reduced mean loss rate from TruEnd-treated dataset as a rough 'forecast'
+CreditLoss_NoTruEnd <- sum(datCompare$Balance.x, na.rm=T) * meanLoss_NoTruEnd
+CreditLoss_TruEnd <- sum(datCompare$Balance.y, na.rm=T) * meanLoss_TruEnd
+cat("NOTE: Average credit loss amount for raw dataset using \\bar{l}=", percent(meanLoss_NoTruEnd,accuracy=0.1), " as forecast: ",
+    comma(CreditLoss_NoTruEnd), ".\n")
+cat("NOTE: Average credit loss amount for TruEnd-treated dataset using \\bar{l}=", percent(meanLoss_TruEnd,accuracy=0.1), " as forecast: ",
+    comma(CreditLoss_TruEnd), ".\n")
+cat("NOTE: Difference: ", comma(CreditLoss_NoTruEnd-CreditLoss_TruEnd))
 
 
 
@@ -499,4 +556,4 @@ hist(datCreditAggr_TruEnd[DefSpells_Num>0 & WOff==1, LoanAge], breaks="FD")
 # - Cleanup
 rm(datCredit_TruEnd_W, datCredit_NoTruEnd_W, g1, g2, plot.full, datPlot, datAnnotate,
    datCredit_NoTruEnd, datCredit_TruEnd, datCreditAggr_NoTruEnd, datCreditAggr_TruEnd,
-   datCredit_NoTruEnd_NOOB, datCredit_TruEnd_NOOB, datCreditAggr_TruEnd_W, datCreditAggr_NoTruEnd_W); gc()
+   datCredit_NoTruEnd_NOOB, datCredit_TruEnd_NOOB, datCreditAggr_TruEnd_W, datCreditAggr_NoTruEnd_W, datCompare); gc()
