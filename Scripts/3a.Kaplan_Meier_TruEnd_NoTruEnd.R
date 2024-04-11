@@ -235,7 +235,7 @@ datCured_hazard <- rbind(Combined_cured[Dataset == "a_TruEnd",list(Time,Dataset,
 
 
 
-# ------ 5. Graph: Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# ------ 5. Graph: Cumulative lifetime distribution function => F(t) = 1-S(t) = 1-y = 1-KM(t)
 
 # --- 5.1 Time span [0,60] months | Write-off event
 datWoff_cumulInc_1 <- datWoff_cumulInc[Time<=60,]
@@ -252,10 +252,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(datWoff_cumulInc_1$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_1 <- ggplot(datWoff_cumulInc_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]") ) + 
     annotate("text", x=15, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -284,10 +284,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datWoff_cumulInc_2$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution  => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_2 <- ggplot(datWoff_cumulInc_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]")) + 
     annotate("text", x=75, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -316,10 +316,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datWoff_cumulInc_3$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_3 <- ggplot(datWoff_cumulInc_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative incidence funciton [WOFF] "*italic(F(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]")) + 
     annotate("text", x=150, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -348,10 +348,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(datCured_cumulInc_1$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_1_cured <- ggplot(datCured_cumulInc_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative incidence funciton [Cured] "*italic(F(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
     annotate("text", x=15, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -380,10 +380,10 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datCured_cumulInc_2$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution  => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_2_cured <- ggplot(datCured_cumulInc_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative incidence funciton [Cured] "*italic(F(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
     annotate("text", x=75, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -412,11 +412,11 @@ vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datCured_cumulInc_3$Value, na.rm=T)
 
-# - Cumulative incidence function => F(t) = 1-S(t) = 1-y = 1-KM(t)
+# - Cumulative lifetime distribution  => F(t) = 1-S(t) = 1-y = 1-KM(t)
 (gsurv1c_Combined_Ft_3_cured <- ggplot(datCured_cumulInc_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative incidence funciton [Cured] "*italic(F(t)))) + 
-    annotate("text", x=150, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
+    annotate("text", x=200, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
@@ -454,7 +454,7 @@ aggrSeries2_1 <- max(datWoff_hazard_1$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_1 <- ggplot(datWoff_hazard_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=40, y=aggrSeries2_1*0.5, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -486,7 +486,7 @@ aggrSeries2_1 <- max(datWoff_hazard_2$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_2 <- ggplot(datWoff_hazard_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) +  
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) +  
     annotate("text", x=105, y=aggrSeries2_1*0.96, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -518,7 +518,7 @@ aggrSeries2_1 <- max(datWoff_hazard_3$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_3 <- ggplot(datWoff_hazard_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [WOFF] "*italic(h(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t)*" [Write-off]"))) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -550,7 +550,7 @@ aggrSeries2_1 <- max(datCured_hazard_1$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_1_cured <- ggplot(datCured_hazard_1, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [Cured] "*italic(h(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=40, y=aggrSeries2_1*0.1, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -582,7 +582,7 @@ aggrSeries2_1 <- max(datCured_hazard_2$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_2_cured <- ggplot(datCured_hazard_2, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [Cured] "*italic(h(t)))) +  
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) +  
     annotate("text", x=80, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
@@ -614,7 +614,7 @@ aggrSeries2_1 <- max(datCured_hazard_3$Value, na.rm=T)
 # Hazard rate
 (gsurv1c_Combined_ht_3_cured <- ggplot(datCured_hazard_3, aes(x=Time, y=Value)) + geom_line(aes(colour=factor(Dataset), linetype=factor(Dataset))) +
     theme_bw() + 
-    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard function [Cured] "*italic(h(t)))) + 
+    labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
              label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
