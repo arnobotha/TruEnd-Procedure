@@ -247,8 +247,8 @@ AES_Woff_cumulInc_1 <- datWoff_cumulInc_1[,list(AE = abs(diff(Value))), by=list(
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+             "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(datWoff_cumulInc_1$Value, na.rm=T)
 
@@ -257,7 +257,7 @@ aggrSeries1_1 <- max(datWoff_cumulInc_1$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]") ) + 
     annotate("text", x=15, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_1*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Woff_cumulInc_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -279,8 +279,8 @@ AES_Woff_cumulInc_2 <- datWoff_cumulInc_2[,list(AE = abs(diff(Value))), by=list(
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datWoff_cumulInc_2$Value, na.rm=T)
 
@@ -289,7 +289,7 @@ aggrSeries1_2 <- max(datWoff_cumulInc_2$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]")) + 
     annotate("text", x=75, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_2*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Woff_cumulInc_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -311,8 +311,8 @@ AES_Woff_cumulInc_3 <- datWoff_cumulInc_3[,list(AE = abs(diff(Value))), by=list(
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datWoff_cumulInc_3$Value, na.rm=T)
 
@@ -321,7 +321,7 @@ aggrSeries1_2 <- max(datWoff_cumulInc_3$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Write-off]")) + 
     annotate("text", x=150, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_cumulInc_3*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Woff_cumulInc_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -343,8 +343,8 @@ AES_Cured_cumulInc_1 <- datCured_cumulInc_1[,list(AE = abs(diff(Value))), by=lis
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_1 <- max(datCured_cumulInc_1$Value, na.rm=T)
 
@@ -353,7 +353,7 @@ aggrSeries1_1 <- max(datCured_cumulInc_1$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
     annotate("text", x=15, y=aggrSeries1_1*0.9, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_1*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Cured_cumulInc_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -375,8 +375,8 @@ AES_Cured_cumulInc_2 <- datCured_cumulInc_2[,list(AE = abs(diff(Value))), by=lis
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datCured_cumulInc_2$Value, na.rm=T)
 
@@ -385,7 +385,7 @@ aggrSeries1_2 <- max(datCured_cumulInc_2$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)),y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
     annotate("text", x=75, y=aggrSeries1_2*0.98, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_2*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Cured_cumulInc_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -407,8 +407,8 @@ AES_Cured_cumulInc_3 <- datCured_cumulInc_3[,list(AE = abs(diff(Value))), by=lis
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(F)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(F)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries1_2 <- max(datCured_cumulInc_3$Value, na.rm=T)
 
@@ -417,7 +417,7 @@ aggrSeries1_2 <- max(datCured_cumulInc_3$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Cumulative lifetime "*italic(F(t))*" [Cure]")) + 
     annotate("text", x=200, y=aggrSeries1_2*0.99, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_cumulInc_3*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(F)[T]*' and '*italic(F)[F]*': ", sprintf("%.3f", MAE_Cured_cumulInc_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -446,8 +446,8 @@ AES_Woff_hazard_1 <- datWoff_hazard_1[,list(AE = abs(diff(Value))), by=list(Time
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datWoff_hazard_1$Value, na.rm=T)
 
@@ -456,7 +456,7 @@ aggrSeries2_1 <- max(datWoff_hazard_1$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=40, y=aggrSeries2_1*0.5, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_1*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Woff_hazard_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -478,8 +478,8 @@ AES_Woff_hazard_2 <- datWoff_hazard_2[,list(AE = abs(diff(Value))), by=list(Time
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datWoff_hazard_2$Value, na.rm=T)
 
@@ -488,7 +488,7 @@ aggrSeries2_1 <- max(datWoff_hazard_2$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) +  
     annotate("text", x=105, y=aggrSeries2_1*0.96, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_2*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Woff_hazard_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
@@ -510,8 +510,8 @@ AES_Woff_hazard_3 <- datWoff_hazard_3[,list(AE = abs(diff(Value))), by=list(Time
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-             "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datWoff_hazard_3$Value, na.rm=T)
 
@@ -520,7 +520,7 @@ aggrSeries2_1 <- max(datWoff_hazard_3$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t)*" [Write-off]"))) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Woff_hazard_3*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Woff_hazard_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
@@ -542,8 +542,8 @@ AES_Cured_hazard_1 <- datCured_hazard_1[,list(AE = abs(diff(Value))), by=list(Ti
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datCured_hazard_1$Value, na.rm=T)
 
@@ -552,7 +552,7 @@ aggrSeries2_1 <- max(datCured_hazard_1$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=40, y=aggrSeries2_1*0.1, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_1*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Cured_hazard_1*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel)+
@@ -574,8 +574,8 @@ AES_Cured_hazard_2 <- datCured_hazard_2[,list(AE = abs(diff(Value))), by=list(Ti
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datCured_hazard_2$Value, na.rm=T)
 
@@ -584,7 +584,7 @@ aggrSeries2_1 <- max(datCured_hazard_2$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) +  
     annotate("text", x=80, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_2*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Cured_hazard_2*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
@@ -606,8 +606,8 @@ AES_Cured_hazard_3 <- datCured_hazard_3[,list(AE = abs(diff(Value))), by=list(Ti
 # - Graphing parameters
 chosenFont <- "Cambria"
 vCol <- brewer.pal(n=3, name = "Set2")[c(1,2,3)]
-vLabel <- c("a_TruEnd"=bquote(italic(A)[t]*": TruEnd "),
-            "b_NoTruEnd"=bquote(italic(B)[t]*": No TruEnd "))
+vLabel <- c("a_TruEnd"=bquote(italic(h)[T]*": TruEnd "),
+            "b_NoTruEnd"=bquote(italic(h)[F]*": No TruEnd "))
 linetype.v <- c("solid", "dashed")
 aggrSeries2_1 <- max(datCured_hazard_3$Value, na.rm=T)
 
@@ -616,7 +616,7 @@ aggrSeries2_1 <- max(datCured_hazard_3$Value, na.rm=T)
     theme_bw() + 
     labs(x=bquote("Default spell age (months) "*italic(t)), y=bquote("Estimated hazard "*italic(h(t))*" [Write-off]")) + 
     annotate("text", x=150, y=aggrSeries2_1*0.8, size=3, family=chosenFont,
-             label=paste0("'MAE between '*italic(A[t])*' and '*italic(B[t])*': ", sprintf("%.3f", MAE_Cured_hazard_3*100), "%'"), parse=T) + 
+             label=paste0("'MAE between '*italic(h)[T]*' and '*italic(h)[F]*': ", sprintf("%.3f", MAE_Cured_hazard_3*100), "%'"), parse=T) + 
     theme(text=element_text(family=chosenFont),legend.position = "bottom") + 
     scale_color_brewer(palette="Dark2", name="Dataset", labels=vLabel) + 
     scale_fill_brewer(palette="Dark2", name="Dataset", labels=vLabel) +
