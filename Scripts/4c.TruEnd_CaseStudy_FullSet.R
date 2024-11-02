@@ -12,6 +12,8 @@
 #   Afterwards, we graph the implied loss function across all iterations as the main result.
 #   Ancillary results across all iterations also include: 1) mean contamination degree;
 #     2) portfolio-level TZB-prevalence rate; 3) mean account ages
+# This script was run interactively by setting \tau=6 and 12, whereafter results
+# were saved accordingly
 # ---------------------------------------------------------------------------------------
 # -- Script dependencies:
 #   - 0.Setup.R
@@ -129,7 +131,8 @@ vSize <- datGiven[order(get(accVar)),list(Freq = max(get(timeVar),na.rm=T)), by=
 
 # - Define objective function and associated argument list
 w1 <- 1 # weight for M1 with its small domain
-w2 <- 0.0006459068 # weight for M2 with its large domain, should logically be < w1
+w2 <- 0.0006459068 # weight for M2 with its large domain, should logically be < w1 | \tau=6
+#w2 <- 0.0006192211 # weight for M2 with its large domain, should logically be < w1 | \tau=12
 # Best t_z given by maximising:
 objFunc <- function(vM1, vM2, w1=w1, w2=w2) {
   sum( (w2*vM2 - w1*vM1), na.rm=T ) / sd(w2*vM2 - w1*vM1, na.rm=T)
@@ -157,7 +160,7 @@ datResults <- foreach(it=1:numThres, .combine='rbind', .verbose=F, .inorder=T,
 stopCluster(cl.port); tme <- proc.time() - ptm #IGNORE: for computation time calculation
 
 # - Save to disk (zip) for quick disk-based retrieval later
-pack.ffdf(paste0(genObjPath,"Results_Candidate2_", caseStudy_Name), datResults)
+pack.ffdf(paste0(genObjPath,"Results_Candidate2_", caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau), datResults)
 
 # - Logging
 cat(paste0("\n END: TruEnd-procedure applied! Runtime: ", sprintf("%.1f", tme[3] / 60), " minutes"),
@@ -188,7 +191,7 @@ cat("Minimum of f: ", comma(min(datPlot$Objective, na.rm=T)), " found at b=",
 # ------ 3. Analytics
 
 # - Confirm extracted case study is loaded into memory
-if (!exists('datResults')) unpack.ffdf(paste0(genObjPath,"Results_Candidate2_", caseStudy_Name), tempPath)
+if (!exists('datResults')) unpack.ffdf(paste0(genObjPath,"Results_Candidate2_", caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau), tempPath)
 
 # - Set universal graphing parameters
 chosenFont <- "Cambria"
@@ -255,7 +258,7 @@ vLabel <- c("Objective" = bquote("Objective function "*italic(f)),
 
 # - save plot
 dpi <- 175
-ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TruEnd-optima.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TruEnd-optima.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 # -- Version with bigger DPI for miniplots in LaTeX
@@ -282,7 +285,7 @@ ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TruEnd-optima.p
 
 # - save plot
 dpi <- 260
-ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TruEnd-optima_small.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TruEnd-optima_small.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 
@@ -312,7 +315,7 @@ vLabel <- percent(vThres2)
 
 # - save plot
 dpi <- 190
-ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TruEnd-optima_BalToPrinc.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g0, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TruEnd-optima_BalToPrinc.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 
@@ -344,7 +347,7 @@ vCol <- brewer.pal(10, "Paired")[c(2,1)]
 
 # - save plot
 dpi <- 200
-ggsave(g1, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_ContaminationDegree.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g1, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_ContaminationDegree.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 
@@ -379,7 +382,7 @@ vCol <- brewer.pal(10, "Paired")[c(10,9)]
 
 # - save plot
 dpi <- 200
-ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TZB-prevalence.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TZB-prevalence.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 
@@ -417,7 +420,7 @@ vLabel <- percent(vThres2)
 
 # - save plot
 dpi <- 200
-ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_TZB-prevalence_BalToPrinc.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
+ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TZB-prevalence_BalToPrinc.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 
 
@@ -434,7 +437,12 @@ datEnrich <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, TruEnd_s
                           cols=TruEnd_sd:TZB_Length_sd, names_to="Measure", values_to="SD") %>% as.data.table()
 datEnrich[, Measure := case_when(Measure == "TZB_Length_sd" ~ "TZB_Length_mean", Measure == "TruEnd_sd" ~ "TruEnd_mean")] # Temporary key just to facilitate fusion back to datPlot
 datPlot <- merge(datPlot, datEnrich, by=c("Threshold", "Measure"), all.x=T); rm(datEnrich)
-datPlot[, N := unique(datResults$Accs_Count)[1]] # Enrich with sample size info
+
+# - Enrich graphing dataset with sample sizes
+datEnrich <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, Accs_Count_TruEndPoints, Accs_Count_TZBLengths)], 
+                          cols=Accs_Count_TruEndPoints:Accs_Count_TZBLengths, names_to="Measure", values_to="N") %>% as.data.table()
+datEnrich[, Measure := case_when(Measure == "Accs_Count_TZBLengths" ~ "TZB_Length_mean", Measure == "Accs_Count_TruEndPoints" ~ "TruEnd_mean")] # Temporary key just to facilitate fusion back to datPlot
+datPlot <- merge(datPlot, datEnrich, by=c("Threshold", "Measure"), all.x=T); rm(datEnrich)
 
 # - Create 95% confidence interval for point estimate (mean) : Population-training set comparison
 datPlot[, ErrMargin := (qnorm(1-(1-0.95)/2)*SD/sqrt(N))]
@@ -483,7 +491,7 @@ vLabel2 <- c("TruEnd_mean"="Age (TruEnd)", "TZB_Length_mean" = "Length of TZB-pe
 
 # - save plot
 dpi <- 220
-ggsave(g3, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_AccountAges.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
+ggsave(g3, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_AccountAges.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
 
 
 
@@ -532,7 +540,7 @@ vLabel <- percent(vThres2)
 
 # - save plot
 dpi <- 220
-ggsave(g3, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_AccountAges_BalToPrinc.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
+ggsave(g3, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_AccountAges_BalToPrinc.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
 
 
 
@@ -586,7 +594,7 @@ vLabel <- c("M1_mean"=bquote("Mean of "*italic(M[1])), "M2_mean"=bquote("Mean of
 
 # - save plot
 dpi <- 195
-ggsave(g4, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_Balances.png"),width=1200/dpi, height=1700/dpi,dpi=dpi, bg="white")
+ggsave(g4, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_Balances.png"),width=1200/dpi, height=1700/dpi,dpi=dpi, bg="white")
 
 
 
@@ -604,7 +612,12 @@ datEnrich <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, M1_sd, M
                           cols=M1_sd:M2_sd, names_to="Measure", values_to="SD") %>% as.data.table()
 datEnrich[, Measure := case_when(Measure == "M1_sd" ~ "M1_mean", Measure == "M2_sd" ~ "M2_mean")] # Temporary key just to facilitate fusion back to datPlot
 datPlot <- merge(datPlot, datEnrich, by=c("Threshold", "Measure"), all.x=T); rm(datEnrich)
-datPlot[, N := unique(datResults$Accs_Count)[1]] # Enrich with sample size info
+
+# - Enrich graphing dataset with sample sizes
+datEnrich <- pivot_longer(data=datResults[Threshold2==0,list(Threshold, Accs_Count_M1, Accs_Count_M2)], 
+                          cols=Accs_Count_M1:Accs_Count_M2, names_to="Measure", values_to="N") %>% as.data.table()
+datEnrich[, Measure := case_when(Measure == "Accs_Count_M1" ~ "M1_mean", Measure == "Accs_Count_M2" ~ "M2_mean")] # Temporary key just to facilitate fusion back to datPlot
+datPlot <- merge(datPlot, datEnrich, by=c("Threshold", "Measure"), all.x=T); rm(datEnrich)
 
 # - Create 95% confidence interval for point estimate (mean) : Population-training set comparison
 datPlot[, ErrMargin := (qnorm(1-(1-0.95)/2)*SD/sqrt(N))]
@@ -652,7 +665,7 @@ vLabel2 <- c("M1_mean"=bquote(italic(bar(M)[1])), "M2_mean"=bquote(italic(bar(M)
 
 # - save plot
 dpi <- 220
-ggsave(g5, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_Balances_M1M2.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
+ggsave(g5, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_Balances_M1M2.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
 
 
 
@@ -703,7 +716,7 @@ vLabel <- percent(vThres2)
 
 # - save plot
 dpi <- 220
-ggsave(g5, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name, "_Balances_M1M2_BalToPrinc.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
+ggsave(g5, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_Balances_M1M2_BalToPrinc.png"),width=1200/dpi, height=1500/dpi,dpi=dpi, bg="white")
 
 
 
