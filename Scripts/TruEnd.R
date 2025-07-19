@@ -2,7 +2,7 @@
 # Function definitions used within the TruEnd-procedure itself
 # ---------------------------------------------------------------------------------------
 # SCRIPT AUTHOR(S): Dr Arno Botha
-# VERSION: 1.3 (Nov-2024)
+# VERSION: 1.4 (Jun-2025)
 # DESCRIPTION: 
 # See Botha, A., Verster, T., Bester, R. (2024). The TruEnd-procedure: Treating trailing
 #   zero-valued balances in credit data (forthcoming). ResearchGate

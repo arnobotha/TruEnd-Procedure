@@ -366,12 +366,12 @@ vCol <- brewer.pal(10, "Paired")[c(10,9)]
 
 # - create graph
 (g2 <- ggplot(datResults[Threshold2==0,], aes(x=Threshold, y=TZB_prevalence)) + theme_minimal() + 
-    labs(y="Portfolio-wide TZB-prevalence (%) amongst all accounts", x=bquote("Threshold (ZAR) "*italic(b))) + 
+    labs(y="Portfolio-wide TZB-prevalence (%)", x=bquote("Threshold (ZAR) "*italic(b))) + 
     theme(text=element_text(family=chosenFont),legend.position="bottom") + 
     # Main graph
     geom_line(linewidth=0.5, colour=vCol[2]) + geom_point(size=2, colour=vCol[1]) +
     # Annotations
-    annotate(geom="text", x=3500, y=b_prevalence*1.01, family=chosenFont, size=4, parse=T,
+    annotate(geom="text", x=5000, y=b_prevalence*1.01, family=chosenFont, size=4, parse=T,
              label=paste0("'Prevalence at chosen '*italic(b^{'*'})==",b_value,"*':  ", sprintf("%.1f", b_prevalence*100), "%'")) + 
     geom_segment(x=0, xend=b_value, y=b_prevalence, yend=b_prevalence, linewidth=0.5, linetype="dotted") + 
     geom_segment(x=b_value, xend=b_value, y=0, yend=b_prevalence, linewidth=0.5, linetype="dotted") + 
@@ -381,7 +381,7 @@ vCol <- brewer.pal(10, "Paired")[c(10,9)]
 )
 
 # - save plot
-dpi <- 200
+dpi <- 260
 ggsave(g2, file=paste0(genFigPath,"CaseStudy-",caseStudy_Name,"_MinLength-",minLength,"_Tau-",tau, "_TZB-prevalence.png"),width=1200/dpi, height=1000/dpi,dpi=dpi, bg="white")
 
 

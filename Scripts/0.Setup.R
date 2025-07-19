@@ -73,33 +73,22 @@ genRawPath <- "C:/Data/"
 
 # -- Path variables | User-dependent
 
-if (Sys.getenv("USERNAME") == "WRQ") {
+if (Sys.getenv("USERNAME") %in% c("Arno Botha", "arnos")) {
   
   # - Custom path where R-scripts are saved
-  path_cust <- "C:/Users/WRQ/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Scripts/"
+  path_cust <- "E:/Backupz/Google Drive/WorkLife/Analytix/R&D Codebases/TruEnd-Procedure/Scripts/"
   
   # - Common path for storing important R-objects as back-up
-  genObjPath <- "C:/Users/WRQ/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Objects/"
+  genObjPath <- "E:/Backupz/Google Drive/WorkLife/Analytix/R&D Codebases/TruEnd-Procedure/Objects/"
   
   # - Common path for saving important analytics (e.g., sampling)
-  genFigPath <- "C:/Users/WRQ/OneDrive - FRG/Analytix/Research/TruEnd-Procedure/Figures/"
-  
-} else if (Sys.getenv("USERNAME") == "Arno Botha") {
-  
-  # - Custom path where R-scripts are saved
-  path_cust <- "E:/WorkLife/Analytix/Research/TruEnd-Procedure/Scripts/"
-  
-  # - Common path for storing important R-objects as back-up
-  genObjPath <- "E:/WorkLife/Analytix/Research/TruEnd-Procedure/Objects/"
-  
-  # - Common path for saving important analytics (e.g., sampling)
-  genFigPath <- "E:/WorkLife/Analytix/Research/TruEnd-Procedure/Figures/"
+  genFigPath <- "E:/Backupz/Google Drive/WorkLife/Analytix/R&D Codebases/TruEnd-Procedure/Figures/"
   
   # - Common path for saving big data objects
-  genPath <- "E:/DataDump/FNB SLC/TruEnd-Procedure_Data/"
+  genPath <- "E:/DataDump/RetailMortgages-FNB/TruEnd-Procedure_Data/"
   
   # - Common path for importing raw data
-  genRawPath <- "E:/DataDump/FNB SLC/"
+  genRawPath <- "E:/DataDump/RetailMortgages-FNB/"
   
 } else if (Sys.getenv("USERNAME") == "R5422965") {
   
